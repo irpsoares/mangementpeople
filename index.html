@@ -1,0 +1,4851 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PPM · Gestão de Pessoas em Suprimentos</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+
+:root {
+
+  --bg: #0f1117;
+
+  --bg2: #171b26;
+
+  --bg3: #1e2333;
+
+  --bg4: #252b3b;
+
+  --border: #2a3048;
+
+  --border2: #343d5c;
+
+  --text: #e8ecf4;
+
+  --text2: #a0a8c0;
+
+  --text3: #606880;
+
+  --accent: #3b82f6;
+
+  --accent2: #2563eb;
+
+  --accent-glow: rgba(59,130,246,0.15);
+
+  --green: #22c55e;
+
+  --green-bg: rgba(34,197,94,0.1);
+
+  --yellow: #f59e0b;
+
+  --yellow-bg: rgba(245,158,11,0.1);
+
+  --red: #ef4444;
+
+  --red-bg: rgba(239,68,68,0.1);
+
+  --purple: #a78bfa;
+
+  --purple-bg: rgba(167,139,250,0.1);
+
+  --cyan: #22d3ee;
+
+  --sidebar-w: 220px;
+
+  --radius: 10px;
+
+  --radius-sm: 6px;
+
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+
+  --font: 'DM Sans', sans-serif;
+
+  --mono: 'DM Mono', monospace;
+
+  --transition: 0.18s ease;
+
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+
+::-webkit-scrollbar-track { background: var(--bg2); }
+
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+ 
+
+/* Layout */
+
+#app { display: flex; height: 100vh; overflow: hidden; }
+
+#sidebar {
+
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+
+  background: var(--bg2); border-right: 1px solid var(--border);
+
+  display: flex; flex-direction: column;
+
+  overflow-y: auto; z-index: 10;
+
+  transition: width var(--transition);
+
+}
+
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+#topbar {
+
+  height: 54px; min-height: 54px;
+
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+
+  display: flex; align-items: center; padding: 0 24px; gap: 16px;
+
+}
+
+#content { flex: 1; overflow-y: auto; padding: 28px 28px 48px; }
+
+ 
+
+/* Sidebar */
+
+.sidebar-logo {
+
+  padding: 20px 18px 14px;
+
+  border-bottom: 1px solid var(--border);
+
+  display: flex; align-items: center; gap: 10px;
+
+}
+
+.logo-icon {
+
+  width: 32px; height: 32px; background: var(--accent);
+
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+
+  font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
+
+  box-shadow: 0 0 16px var(--accent-glow);
+
+}
+
+.logo-text { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+
+.logo-sub { font-size: 10px; color: var(--text3); font-weight: 400; text-transform: uppercase; letter-spacing: .06em; }
+
+.nav-section { padding: 14px 10px 4px; }
+
+.nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); font-weight: 600; padding: 0 8px; margin-bottom: 4px; }
+
+.nav-item {
+
+  display: flex; align-items: center; gap: 10px;
+
+  padding: 9px 10px; border-radius: var(--radius-sm);
+
+  cursor: pointer; transition: background var(--transition), color var(--transition);
+
+  font-size: 13.5px; font-weight: 500; color: var(--text2);
+
+  text-decoration: none; position: relative;
+
+}
+
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+
+.nav-item.active { background: var(--accent-glow); color: var(--accent); }
+
+.nav-item.active .nav-icon { color: var(--accent); }
+
+.nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: .8; }
+
+.nav-badge {
+
+  margin-left: auto; background: var(--red); color: #fff;
+
+  font-size: 10px; font-weight: 700; border-radius: 99px;
+
+  padding: 1px 6px; min-width: 18px; text-align: center;
+
+}
+
+.sidebar-footer { margin-top: auto; padding: 14px 12px; border-top: 1px solid var(--border); }
+
+.sidebar-footer-btn {
+
+  display: flex; align-items: center; gap: 8px;
+
+  padding: 8px 10px; border-radius: var(--radius-sm);
+
+  cursor: pointer; color: var(--text3); font-size: 12.5px;
+
+  transition: all var(--transition);
+
+}
+
+.sidebar-footer-btn:hover { background: var(--bg3); color: var(--text2); }
+
+ 
+
+/* Topbar */
+
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text3); }
+
+.breadcrumb-sep { opacity: .4; }
+
+.breadcrumb-current { color: var(--text); font-weight: 500; }
+
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+.topbar-chip {
+
+  display: flex; align-items: center; gap: 6px;
+
+  padding: 5px 12px; border-radius: 99px;
+
+  background: var(--bg3); border: 1px solid var(--border);
+
+  font-size: 12px; color: var(--text2); cursor: pointer;
+
+  transition: all var(--transition);
+
+}
+
+.topbar-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+.topbar-chip svg { width: 14px; height: 14px; }
+
+ 
+
+/* Buttons */
+
+.btn {
+
+  display: inline-flex; align-items: center; gap: 7px;
+
+  padding: 8px 16px; border-radius: var(--radius-sm);
+
+  font-family: var(--font); font-size: 13.5px; font-weight: 600;
+
+  cursor: pointer; transition: all var(--transition); border: none; white-space: nowrap;
+
+}
+
+.btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+.btn-primary { background: var(--accent); color: #fff; }
+
+.btn-primary:hover { background: var(--accent2); box-shadow: 0 0 16px var(--accent-glow); }
+
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+
+.btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
+
+.btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid transparent; }
+
+.btn-danger:hover { background: var(--red); color: #fff; }
+
+.btn-success { background: var(--green-bg); color: var(--green); border: 1px solid transparent; }
+
+.btn-success:hover { background: var(--green); color: #fff; }
+
+.btn-sm { padding: 5px 11px; font-size: 12.5px; }
+
+.btn-xs { padding: 3px 8px; font-size: 11.5px; }
+
+ 
+
+/* Cards */
+
+.card {
+
+  background: var(--bg2); border: 1px solid var(--border);
+
+  border-radius: var(--radius); padding: 20px;
+
+  transition: border-color var(--transition);
+
+}
+
+.card:hover { border-color: var(--border2); }
+
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+
+.card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+
+ 
+
+/* KPI Cards */
+
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; margin-bottom: 24px; }
+
+.kpi-card {
+
+  background: var(--bg2); border: 1px solid var(--border);
+
+  border-radius: var(--radius); padding: 18px 20px;
+
+  position: relative; overflow: hidden;
+
+}
+
+.kpi-card::before {
+
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+
+  background: var(--kpi-color, var(--accent));
+
+}
+
+.kpi-label { font-size: 11.5px; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; font-weight: 600; margin-bottom: 8px; }
+
+.kpi-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+
+.kpi-sub { font-size: 12px; color: var(--text3); }
+
+ 
+
+/* Tables */
+
+.table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+
+table { width: 100%; border-collapse: collapse; }
+
+thead { background: var(--bg3); }
+
+th {
+
+  padding: 10px 14px; text-align: left; font-size: 11.5px;
+
+  font-weight: 600; color: var(--text3); text-transform: uppercase;
+
+  letter-spacing: .06em; white-space: nowrap; border-bottom: 1px solid var(--border);
+
+}
+
+td {
+
+  padding: 11px 14px; font-size: 13.5px; color: var(--text2);
+
+  border-bottom: 1px solid var(--border); vertical-align: middle;
+
+}
+
+tr:last-child td { border-bottom: none; }
+
+tbody tr { transition: background var(--transition); }
+
+tbody tr:hover { background: var(--bg3); }
+
+.td-name { color: var(--text); font-weight: 500; }
+
+.td-actions { display: flex; gap: 6px; align-items: center; }
+
+ 
+
+/* Badges */
+
+.badge {
+
+  display: inline-flex; align-items: center; gap: 4px;
+
+  padding: 3px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 600;
+
+  white-space: nowrap;
+
+}
+
+.badge-green { background: var(--green-bg); color: var(--green); }
+
+.badge-yellow { background: var(--yellow-bg); color: var(--yellow); }
+
+.badge-red { background: var(--red-bg); color: var(--red); }
+
+.badge-blue { background: var(--accent-glow); color: var(--accent); }
+
+.badge-purple { background: var(--purple-bg); color: var(--purple); }
+
+.badge-gray { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+
+ 
+
+/* Risk bar */
+
+.risk-bar-wrap { display: flex; align-items: center; gap: 8px; }
+
+.risk-bar { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; min-width: 60px; }
+
+.risk-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+
+.risk-score { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); min-width: 26px; text-align: right; }
+
+ 
+
+/* Forms */
+
+.form-grid { display: grid; gap: 14px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+
+.form-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .05em; }
+
+.form-input, .form-select, .form-textarea {
+
+  background: var(--bg3); border: 1px solid var(--border);
+
+  color: var(--text); border-radius: var(--radius-sm);
+
+  padding: 9px 12px; font-family: var(--font); font-size: 13.5px;
+
+  transition: border-color var(--transition), box-shadow var(--transition);
+
+  outline: none; width: 100%;
+
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+
+  border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+
+}
+
+.form-input::placeholder { color: var(--text3); }
+
+.form-textarea { resize: vertical; min-height: 80px; }
+
+.form-select option { background: var(--bg3); }
+
+.form-hint { font-size: 11.5px; color: var(--text3); }
+
+.form-error { font-size: 11.5px; color: var(--red); }
+
+.range-wrap { display: flex; align-items: center; gap: 10px; }
+
+input[type=range] { flex: 1; accent-color: var(--accent); }
+
+ 
+
+/* Modal */
+
+.modal-overlay {
+
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+
+  display: flex; align-items: center; justify-content: center;
+
+  z-index: 100; backdrop-filter: blur(4px); padding: 20px;
+
+  animation: fadeIn .15s ease;
+
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+
+  background: var(--bg2); border: 1px solid var(--border2);
+
+  border-radius: var(--radius); width: 100%; max-width: 560px;
+
+  max-height: 90vh; display: flex; flex-direction: column;
+
+  box-shadow: var(--shadow);
+
+  animation: slideUp .2s ease;
+
+}
+
+@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-lg { max-width: 760px; }
+
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+
+.modal-title { font-size: 15px; font-weight: 700; color: var(--text); }
+
+.modal-close { width: 30px; height: 30px; border-radius: var(--radius-sm); background: var(--bg3); border: none; cursor: pointer; color: var(--text2); display: flex; align-items: center; justify-content: center; transition: all var(--transition); }
+
+.modal-close:hover { background: var(--red-bg); color: var(--red); }
+
+.modal-body { overflow-y: auto; padding: 22px; flex: 1; }
+
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+
+ 
+
+/* Toast */
+
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+
+.toast {
+
+  display: flex; align-items: center; gap: 10px;
+
+  padding: 12px 16px; border-radius: var(--radius-sm);
+
+  background: var(--bg4); border: 1px solid var(--border2);
+
+  box-shadow: var(--shadow); font-size: 13.5px; color: var(--text);
+
+  animation: toastIn .25s ease; pointer-events: auto;
+
+  max-width: 340px;
+
+}
+
+@keyframes toastIn { from { transform: translateX(32px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.toast-success .toast-icon { color: var(--green); }
+
+.toast-error .toast-icon { color: var(--red); }
+
+.toast-info .toast-icon { color: var(--accent); }
+
+.toast-icon svg { width: 16px; height: 16px; }
+
+ 
+
+/* Page headers */
+
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+
+.page-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -.02em; }
+
+.page-desc { font-size: 13px; color: var(--text3); margin-top: 4px; }
+
+.page-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+ 
+
+/* Filter bar */
+
+.filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+
+.filter-bar .form-input { max-width: 220px; }
+
+.filter-bar .form-select { max-width: 160px; }
+
+ 
+
+/* Tabs */
+
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+
+.tab-btn {
+
+  padding: 10px 16px; font-size: 13.5px; font-weight: 500;
+
+  color: var(--text3); cursor: pointer; border: none; background: none;
+
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+
+  transition: all var(--transition); font-family: var(--font);
+
+}
+
+.tab-btn:hover { color: var(--text2); }
+
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+ 
+
+/* Kanban */
+
+.kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+
+.kanban-col { min-width: 220px; width: 220px; flex-shrink: 0; }
+
+.kanban-col-header {
+
+  padding: 10px 14px; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+
+  display: flex; align-items: center; justify-content: space-between;
+
+}
+
+.kanban-col-body { background: var(--bg3); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); padding: 8px; min-height: 80px; display: flex; flex-direction: column; gap: 8px; }
+
+.kanban-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; cursor: pointer; transition: all var(--transition); }
+
+.kanban-card:hover { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+
+.kanban-card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+
+.kanban-card-sub { font-size: 12px; color: var(--text3); }
+
+ 
+
+/* Tags */
+
+.tag-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.tag {
+
+  display: inline-flex; align-items: center; gap: 4px;
+
+  padding: 3px 8px; background: var(--bg3); border: 1px solid var(--border);
+
+  border-radius: 99px; font-size: 11.5px; color: var(--text3); font-weight: 500;
+
+}
+
+.tag-remove { cursor: pointer; opacity: .6; margin-left: 2px; }
+
+.tag-remove:hover { opacity: 1; color: var(--red); }
+
+.tag-input-wrap { display: flex; gap: 6px; }
+
+.tag-input-wrap .form-input { flex: 1; }
+
+ 
+
+/* Timeline */
+
+.timeline { display: flex; flex-direction: column; gap: 0; }
+
+.timeline-item { display: flex; gap: 14px; padding-bottom: 20px; position: relative; }
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-item::before {
+
+  content: ''; position: absolute; left: 14px; top: 28px; bottom: 0; width: 1px;
+
+  background: var(--border);
+
+}
+
+.timeline-item:last-child::before { display: none; }
+
+.timeline-dot { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 2px solid; z-index: 1; }
+
+.timeline-dot-pos { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+
+.timeline-dot-neg { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+
+.timeline-dot-neu { background: var(--bg3); border-color: var(--border2); color: var(--text3); }
+
+.timeline-content { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; }
+
+.timeline-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+
+.timeline-author { font-size: 12.5px; font-weight: 600; color: var(--text); }
+
+.timeline-date { font-size: 11.5px; color: var(--text3); }
+
+.timeline-text { font-size: 13.5px; color: var(--text2); line-height: 1.6; }
+
+ 
+
+/* Score ring */
+
+.score-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+.score-ring { position: relative; width: 80px; height: 80px; }
+
+.score-ring canvas { width: 80px !important; height: 80px !important; }
+
+.score-ring-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+
+ 
+
+/* Risk drivers */
+
+.driver-list { display: flex; flex-direction: column; gap: 8px; }
+
+.driver-item { display: flex; align-items: center; gap: 10px; }
+
+.driver-name { font-size: 12.5px; color: var(--text2); flex: 1; }
+
+.driver-bar-wrap { width: 100px; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+
+.driver-bar-fill { height: 100%; border-radius: 3px; background: var(--accent); }
+
+.driver-pts { font-size: 12px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; width: 30px; text-align: right; }
+
+ 
+
+/* Alert items */
+
+.alert-list { display: flex; flex-direction: column; gap: 10px; }
+
+.alert-item { display: flex; gap: 12px; padding: 12px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); border-left: 3px solid var(--alert-color, var(--yellow)); }
+
+.alert-item-icon { color: var(--alert-color, var(--yellow)); flex-shrink: 0; }
+
+.alert-item-title { font-size: 13px; font-weight: 600; color: var(--text); }
+
+.alert-item-desc { font-size: 12px; color: var(--text3); }
+
+ 
+
+/* Correlations graph */
+
+#corr-canvas-wrap { width: 100%; height: 380px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; }
+
+#corr-canvas { width: 100%; height: 100%; }
+
+ 
+
+/* Print */
+
+@media print {
+
+  #sidebar, #topbar, #toast-container, .no-print { display: none !important; }
+
+  #content { padding: 0 !important; }
+
+  * { color: #000 !important; background: #fff !important; border-color: #ccc !important; }
+
+}
+
+#print-overlay { position: fixed; inset: 0; background: #fff; z-index: 200; overflow-y: auto; color: #111; padding: 40px; display: none; }
+
+#print-overlay.visible { display: block; }
+
+#print-overlay * { font-family: var(--font) !important; color: #111; }
+
+ 
+
+/* Section header */
+
+.section-header { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--text3); margin-bottom: 12px; margin-top: 24px; }
+
+.section-header:first-child { margin-top: 0; }
+
+ 
+
+/* Grid layouts */
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+@media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
+
+ 
+
+/* Empty state */
+
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text3); }
+
+.empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: .4; }
+
+.empty-state-text { font-size: 14px; }
+
+ 
+
+/* Checkbox */
+
+.check-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+.check-wrap input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+ 
+
+/* Divider */
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+ 
+
+/* Collapsible */
+
+.collapsible-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+
+.collapsible-icon { transition: transform var(--transition); }
+
+.collapsible-icon.open { transform: rotate(180deg); }
+
+</style>
+
+</head>
+
+<body>
+
+ 
+
+<div id="app">
+
+  <!-- Sidebar -->
+
+  <nav id="sidebar" role="navigation" aria-label="Menu principal">
+
+    <div class="sidebar-logo">
+
+      <div class="logo-icon">P</div>
+
+      <div>
+
+        <div class="logo-text">PPM Suite</div>
+
+        <div class="logo-sub">Suprimentos</div>
+
+      </div>
+
+    </div>
+
+    <div class="nav-section">
+
+      <div class="nav-label">Visão Geral</div>
+
+      <a class="nav-item" data-route="dashboard" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+
+        Dashboard
+
+      </a>
+
+    </div>
+
+    <div class="nav-section">
+
+      <div class="nav-label">Cadastros</div>
+
+      <a class="nav-item" data-route="colaboradores" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+
+        Colaboradores
+
+      </a>
+
+      <a class="nav-item" data-route="funcoes" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+
+        Funções Críticas
+
+      </a>
+
+      <a class="nav-item" data-route="sucessao" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+
+        Sucessão
+
+      </a>
+
+      <a class="nav-item" data-route="vagas" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+
+        Vagas
+
+      </a>
+
+    </div>
+
+    <div class="nav-section">
+
+      <div class="nav-label">Análise</div>
+
+      <a class="nav-item" data-route="observacoes" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+
+        Observações
+
+      </a>
+
+      <a class="nav-item" data-route="correlacoes" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+
+        Correlações
+
+      </a>
+
+    </div>
+
+    <div class="nav-section">
+
+      <div class="nav-label">Sistema</div>
+
+      <a class="nav-item" data-route="config" href="#">
+
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M5.34 18.66l-1.41 1.41M21 12h-2M5 12H3M17.66 18.66l1.41 1.41M7.76 5.51L6.34 4.09M12 2v2M12 20v2"/></svg>
+
+        Configurações
+
+      </a>
+
+    </div>
+
+    <div class="sidebar-footer">
+
+      <div class="sidebar-footer-btn" onclick="showPrintOverlay()">
+
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+
+        Relatório Executivo
+
+      </div>
+
+    </div>
+
+  </nav>
+
+ 
+
+  <!-- Main area -->
+
+  <div id="main">
+
+    <div id="topbar">
+
+      <div class="breadcrumb" id="breadcrumb">
+
+        <span>PPM</span>
+
+        <span class="breadcrumb-sep">›</span>
+
+        <span class="breadcrumb-current" id="bc-current">Dashboard</span>
+
+      </div>
+
+      <div class="topbar-right">
+
+        <div class="topbar-chip" onclick="exportData()">
+
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+
+          Exportar
+
+        </div>
+
+        <label class="topbar-chip" style="cursor:pointer;">
+
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+
+          Importar
+
+          <input type="file" accept=".json" onchange="importData(event)" style="display:none">
+
+        </label>
+
+      </div>
+
+    </div>
+
+    <div id="content" role="main"></div>
+
+  </div>
+
+</div>
+
+ 
+
+<!-- Toast container -->
+
+<div id="toast-container" aria-live="polite"></div>
+
+ 
+
+<!-- Print overlay -->
+
+<div id="print-overlay">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+
+    <h1 style="font-size:22px;font-weight:700;">Relatório Executivo · PPM Suite</h1>
+
+    <div style="display:flex;gap:10px;">
+
+      <button class="btn btn-primary no-print" onclick="window.print()">Imprimir / PDF</button>
+
+      <button class="btn btn-ghost no-print" onclick="hidePrintOverlay()">Fechar</button>
+
+    </div>
+
+  </div>
+
+  <div id="print-content"></div>
+
+</div>
+
+ 
+
+<script>
+
+// ============================================================
+
+// STORAGE MODULE
+
+// ============================================================
+
+const STORAGE_KEY = 'ppm_app_v1';
+
+ 
+
+const Storage = {
+
+  get() {
+
+    try {
+
+      const raw = localStorage.getItem(STORAGE_KEY);
+
+      return raw ? JSON.parse(raw) : null;
+
+    } catch { return null; }
+
+  },
+
+  save(data) {
+
+    data.meta.lastUpdated = new Date().toISOString();
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+  },
+
+  backup() {
+
+    const data = this.get();
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+
+    a.href = url;
+
+    a.download = `ppm_backup_${new Date().toISOString().slice(0,10)}.json`;
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+  },
+
+  restore(data) {
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+  },
+
+  reset() {
+
+    localStorage.removeItem(STORAGE_KEY);
+
+    initApp();
+
+    Router.navigate('dashboard');
+
+    toast('Dados reiniciados com sucesso', 'success');
+
+  }
+
+};
+
+ 
+
+// ============================================================
+
+// SEED DATA
+
+// ============================================================
+
+function generateSeed() {
+
+  const now = new Date().toISOString();
+
+  const d = (daysAgo) => {
+
+    const dt = new Date();
+
+    dt.setDate(dt.getDate() - daysAgo);
+
+    return dt.toISOString();
+
+  };
+
+ 
+
+  return {
+
+    meta: { version: '1.0', lastUpdated: now, createdAt: now },
+
+    settings: {
+
+      weights: {
+
+        criticidade: 30, sucessao: 25, obsNegativas: 20,
+
+        vagaCritica: 10, sinalizacao: 20, desatualizado: 10
+
+      }
+
+    },
+
+    areas: [
+
+      { id: 'a1', nome: 'Compras Diretas' },
+
+      { id: 'a2', nome: 'Compras Indiretas' },
+
+      { id: 'a3', nome: 'Logística & Distribuição' },
+
+      { id: 'a4', nome: 'Contratos & SRM' },
+
+    ],
+
+    colaboradores: [
+
+      { id: 'c1', nome: 'Ana Ferreira', email: 'ana.ferreira@empresa.com', matricula: 'M001', cargo: 'Gerente de Compras', senioridade: 'Ger', areaId: 'a1', localidade: 'São Paulo', gestor: 'Carlos Mendes', status: 'ativo', sinalizacaoGestor: 2, retencaoObservada: 1 },
+
+      { id: 'c2', nome: 'Bruno Costa', email: 'bruno.costa@empresa.com', matricula: 'M002', cargo: 'Analista de Procurement Sr.', senioridade: 'Sr', areaId: 'a1', localidade: 'São Paulo', gestor: 'Ana Ferreira', status: 'ativo', sinalizacaoGestor: 1, retencaoObservada: 1 },
+
+      { id: 'c3', nome: 'Carla Ribeiro', email: 'carla.ribeiro@empresa.com', matricula: 'M003', cargo: 'Coordenadora de Contratos', senioridade: 'Coord', areaId: 'a4', localidade: 'Campinas', gestor: 'Carlos Mendes', status: 'ativo', sinalizacaoGestor: 3, retencaoObservada: 0 },
+
+      { id: 'c4', nome: 'Diego Santos', email: 'diego.santos@empresa.com', matricula: 'M004', cargo: 'Analista de Logística Pl.', senioridade: 'Pl', areaId: 'a3', localidade: 'Guarulhos', gestor: 'Mariana Lima', status: 'ativo', sinalizacaoGestor: 0, retencaoObservada: 2 },
+
+      { id: 'c5', nome: 'Elena Moura', email: 'elena.moura@empresa.com', matricula: 'M005', cargo: 'Analista de Compras Jr.', senioridade: 'Jr', areaId: 'a2', localidade: 'São Paulo', gestor: 'Ana Ferreira', status: 'ativo', sinalizacaoGestor: 0, retencaoObservada: 2 },
+
+      { id: 'c6', nome: 'Fábio Alves', email: 'fabio.alves@empresa.com', matricula: 'M006', cargo: 'Especialista em Sourcing', senioridade: 'Sr', areaId: 'a2', localidade: 'São Paulo', gestor: 'Ana Ferreira', status: 'ativo', sinalizacaoGestor: 2, retencaoObservada: 1 },
+
+      { id: 'c7', nome: 'Gabriela Torres', email: 'gabriela.torres@empresa.com', matricula: 'M007', cargo: 'Analista de Contratos Sr.', senioridade: 'Sr', areaId: 'a4', localidade: 'Campinas', gestor: 'Carla Ribeiro', status: 'ativo', sinalizacaoGestor: 1, retencaoObservada: 1 },
+
+      { id: 'c8', nome: 'Henrique Prado', email: 'henrique.prado@empresa.com', matricula: 'M008', cargo: 'Coord. de Logística', senioridade: 'Coord', areaId: 'a3', localidade: 'Guarulhos', gestor: 'Mariana Lima', status: 'ativo', sinalizacaoGestor: 0, retencaoObservada: 2 },
+
+      { id: 'c9', nome: 'Isabela Nunes', email: 'isabela.nunes@empresa.com', matricula: 'M009', cargo: 'Analista de Procurement Pl.', senioridade: 'Pl', areaId: 'a1', localidade: 'São Paulo', gestor: 'Ana Ferreira', status: 'ativo', sinalizacaoGestor: 1, retencaoObservada: 1 },
+
+      { id: 'c10', nome: 'João Lima', email: 'joao.lima@empresa.com', matricula: 'M010', cargo: 'Analista de Suprimentos Jr.', senioridade: 'Jr', areaId: 'a3', localidade: 'São Paulo', gestor: 'Henrique Prado', status: 'inativo', sinalizacaoGestor: 0, retencaoObservada: 2 },
+
+    ],
+
+    funcoesCriticas: [
+
+      { id: 'f1', areaId: 'a1', nomeFuncao: 'Gerência de Compras Diretas', descricao: 'Responsável pelas negociações estratégicas com fornecedores de matéria-prima', colaboradorAtualId: 'c1', criticidade: 5, cobertura: 0, comentarios: 'Posição chave sem backup formal definido' },
+
+      { id: 'f2', areaId: 'a4', nomeFuncao: 'Coordenação de Contratos', descricao: 'Gestão do portfólio de contratos com fornecedores críticos', colaboradorAtualId: 'c3', criticidade: 4, cobertura: 1, comentarios: '' },
+
+      { id: 'f3', areaId: 'a2', nomeFuncao: 'Especialista em Sourcing Estratégico', descricao: 'Desenvolvimento de novos fornecedores e categorias estratégicas', colaboradorAtualId: 'c6', criticidade: 4, cobertura: 0, comentarios: 'Conhecimento único de mercado' },
+
+      { id: 'f4', areaId: 'a3', nomeFuncao: 'Coordenação de Logística', descricao: 'Gestão operacional da cadeia de distribuição', colaboradorAtualId: 'c8', criticidade: 3, cobertura: 1, comentarios: '' },
+
+      { id: 'f5', areaId: 'a1', nomeFuncao: 'Analista Sr. Procurement', descricao: 'Suporte técnico a negociações e análises de TCO', colaboradorAtualId: 'c2', criticidade: 3, cobertura: 0, comentarios: '' },
+
+    ],
+
+    sucessoes: [
+
+      { id: 's1', colaboradorAtualId: 'c1', funcaoTexto: 'Gerência de Compras Diretas', sucessorId: 'c9', prontidao: '12-24m', risco: 'Alto', comentarios: 'Isabela precisa de mentoria intensiva' },
+
+      { id: 's2', colaboradorAtualId: 'c3', funcaoTexto: 'Coordenação de Contratos', sucessorId: 'c7', prontidao: '6-12m', risco: 'Medio', comentarios: 'Gabriela está em desenvolvimento acelerado' },
+
+      { id: 's3', colaboradorAtualId: 'c6', funcaoTexto: 'Especialista em Sourcing', sucessorId: null, prontidao: 'Sem sucessor', risco: 'Alto', comentarios: 'Urgente: definir candidato interno ou recrutar' },
+
+      { id: 's4', colaboradorAtualId: 'c8', funcaoTexto: 'Coordenação de Logística', sucessorId: 'c4', prontidao: 'Ready now', risco: 'Baixo', comentarios: 'Diego está pronto para assumir' },
+
+    ],
+
+    vagas: [
+
+      { id: 'v1', areaId: 'a2', funcaoTexto: 'Analista de Sourcing Sr.', status: 'Em entrevista', criticidade: 5, responsavel: 'Ana Ferreira', comentarios: 'Vaga aberta há 45 dias. Substituição urgente.' },
+
+      { id: 'v2', areaId: 'a1', funcaoTexto: 'Analista de Procurement Jr.', status: 'Aberta', criticidade: 2, responsavel: 'RH', comentarios: '' },
+
+      { id: 'v3', areaId: 'a4', funcaoTexto: 'Especialista em SRM', status: 'Oferta', criticidade: 4, responsavel: 'Carla Ribeiro', comentarios: 'Candidato aprovado aguardando retorno' },
+
+      { id: 'v4', areaId: 'a3', funcaoTexto: 'Operador Logístico', status: 'Fechada', criticidade: 2, responsavel: 'RH', comentarios: 'Contratado em 03/01' },
+
+    ],
+
+    observacoes: [
+
+      { id: 'o1', tipoEntidade: 'Colaborador', entidadeId: 'c1', dataISO: d(15), autor: 'Carlos Mendes', texto: 'Ana demonstrou liderança excepcional na renegociação com Fornecedor XYZ. Resultado acima do esperado (-12% no custo total).', tags: ['desempenho','negociação'], confidencial: false, tom: 'positivo' },
+
+      { id: 'o2', tipoEntidade: 'Colaborador', entidadeId: 'c3', dataISO: d(8), autor: 'Carlos Mendes', texto: 'Carla sinalizou insatisfação com remuneração em reunião de 1:1. Buscando referências de mercado. Alto risco de perda no curto prazo.', tags: ['retenção','alerta'], confidencial: true, tom: 'negativo' },
+
+      { id: 'o3', tipoEntidade: 'Colaborador', entidadeId: 'c3', dataISO: d(45), autor: 'RH', texto: 'Resultado da avaliação de desempenho: nota 4.2/5. Colaboradora bem avaliada pelos pares.', tags: ['avaliação'], confidencial: false, tom: 'positivo' },
+
+      { id: 'o4', tipoEntidade: 'Colaborador', entidadeId: 'c6', dataISO: d(20), autor: 'Ana Ferreira', texto: 'Fábio recebeu proposta de concorrente. Conversa iniciada sobre contra-proposta.', tags: ['retenção','proposta'], confidencial: true, tom: 'negativo' },
+
+      { id: 'o5', tipoEntidade: 'FuncaoCritica', entidadeId: 'f3', dataISO: d(30), autor: 'Ana Ferreira', texto: 'Função de Sourcing sem backup formal. Necessário plano de emergência.', tags: ['risco','urgente'], confidencial: false, tom: 'negativo' },
+
+      { id: 'o6', tipoEntidade: 'Colaborador', entidadeId: 'c2', dataISO: d(5), autor: 'Ana Ferreira', texto: 'Bruno concluiu certificação CPSM. Entregou projeto de redução de fornecedores com sucesso.', tags: ['capacitação','resultado'], confidencial: false, tom: 'positivo' },
+
+      { id: 'o7', tipoEntidade: 'Vaga', entidadeId: 'v1', dataISO: d(3), autor: 'RH', texto: 'Finalistas selecionados: 2 candidatos para etapa final com gestora da área.', tags: ['recrutamento'], confidencial: false, tom: 'neutro' },
+
+      { id: 'o8', tipoEntidade: 'Colaborador', entidadeId: 'c9', dataISO: d(60), autor: 'Ana Ferreira', texto: 'Isabela apresentou análise de spend para board. Boa evolução técnica, mas precisa desenvolver habilidades de negociação.', tags: ['desenvolvimento'], confidencial: false, tom: 'neutro' },
+
+    ],
+
+    correlacoes: [
+
+      { id: 'cr1', origemTipo: 'Colaborador', origemId: 'c1', destinoTipo: 'Colaborador', destinoId: 'c9', tipoRelacao: 'Mentoria', nota: 'Ana apoia desenvolvimento de Isabela como sucessora' },
+
+      { id: 'cr2', origemTipo: 'Colaborador', origemId: 'c3', destinoTipo: 'FuncaoCritica', destinoId: 'f2', tipoRelacao: 'DependeDe', nota: 'Carla é a detentora única do conhecimento de contratos críticos' },
+
+      { id: 'cr3', origemTipo: 'Colaborador', origemId: 'c6', destinoTipo: 'FuncaoCritica', destinoId: 'f3', tipoRelacao: 'Risco', nota: 'Risco alto: sem backup formal para Sourcing' },
+
+      { id: 'cr4', origemTipo: 'Colaborador', origemId: 'c8', destinoTipo: 'Colaborador', destinoId: 'c4', tipoRelacao: 'Back-up', nota: 'Diego está pronto para assumir coord. de logística' },
+
+      { id: 'cr5', origemTipo: 'Vaga', origemId: 'v1', destinoTipo: 'FuncaoCritica', destinoId: 'f3', tipoRelacao: 'Impacta', nota: 'Preenchimento desta vaga impacta diretamente a cobertura da função crítica' },
+
+    ],
+
+    audit: [
+
+      { id: 'au1', dataISO: d(60), usuario: 'sistema', acao: 'create', entidadeTipo: 'meta', entidadeId: 'seed', resumoMudanca: 'Dados iniciais carregados (seed)' }
+
+    ]
+
+  };
+
+}
+
+ 
+
+// ============================================================
+
+// HELPERS
+
+// ============================================================
+
+function uid() {
+
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+}
+
+function esc(str) {
+
+  if (!str) return '';
+
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+}
+
+function formatDate(iso) {
+
+  if (!iso) return '—';
+
+  const d = new Date(iso);
+
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+}
+
+function daysAgo(iso) {
+
+  if (!iso) return 9999;
+
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+
+}
+
+function toast(msg, type = 'info') {
+
+  const icons = {
+
+    success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`,
+
+    error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+
+    info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+
+  };
+
+  const el = document.createElement('div');
+
+  el.className = `toast toast-${type}`;
+
+  el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${esc(msg)}</span>`;
+
+  document.getElementById('toast-container').appendChild(el);
+
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(32px)'; el.style.transition = '.3s ease'; setTimeout(() => el.remove(), 350); }, 3000);
+
+}
+
+function addAudit(data, acao, entidadeTipo, entidadeId, resumo) {
+
+  if (!data.audit) data.audit = [];
+
+  data.audit.unshift({ id: uid(), dataISO: new Date().toISOString(), usuario: 'usuario', acao, entidadeTipo, entidadeId, resumoMudanca: resumo });
+
+  if (data.audit.length > 200) data.audit = data.audit.slice(0, 200);
+
+}
+
+function getNomeColaborador(data, id) {
+
+  const c = data.colaboradores.find(x => x.id === id);
+
+  return c ? c.nome : '—';
+
+}
+
+function getNomeArea(data, id) {
+
+  const a = data.areas.find(x => x.id === id);
+
+  return a ? a.nome : '—';
+
+}
+
+function riskColor(score) {
+
+  if (score >= 60) return 'var(--red)';
+
+  if (score >= 30) return 'var(--yellow)';
+
+  return 'var(--green)';
+
+}
+
+function riskBadge(score) {
+
+  if (score >= 60) return '<span class="badge badge-red">Alto</span>';
+
+  if (score >= 30) return '<span class="badge badge-yellow">Médio</span>';
+
+  return '<span class="badge badge-green">Baixo</span>';
+
+}
+
+function seniorBadge(s) {
+
+  const map = { Jr: 'badge-gray', Pl: 'badge-blue', Sr: 'badge-purple', Coord: 'badge-yellow', Ger: 'badge-red' };
+
+  return `<span class="badge ${map[s] || 'badge-gray'}">${esc(s)}</span>`;
+
+}
+
+function statusBadge(s) {
+
+  if (s === 'ativo') return '<span class="badge badge-green">Ativo</span>';
+
+  return '<span class="badge badge-gray">Inativo</span>';
+
+}
+
+ 
+
+// ============================================================
+
+// RISK ENGINE
+
+// ============================================================
+
+const RiskEngine = {
+
+  calculate(data, colaborador) {
+
+    const weights = data.settings?.weights || { criticidade: 30, sucessao: 25, obsNegativas: 20, vagaCritica: 10, sinalizacao: 20, desatualizado: 10 };
+
+    const drivers = [];
+
+    let score = 0;
+
+ 
+
+    // 1. Criticidade do papel
+
+    const funcao = data.funcoesCriticas.find(f => f.colaboradorAtualId === colaborador.id);
+
+    if (funcao) {
+
+      const pts = Math.round((funcao.criticidade / 5) * weights.criticidade);
+
+      score += pts;
+
+      drivers.push({ nome: 'Criticidade do papel', pts, max: weights.criticidade, detalhe: `Função crítica: ${funcao.nomeFuncao} (${funcao.criticidade}/5)` });
+
+    } else {
+
+      drivers.push({ nome: 'Criticidade do papel', pts: 0, max: weights.criticidade, detalhe: 'Não vinculado a função crítica' });
+
+    }
+
+ 
+
+    // 2. Sucessão
+
+    const suc = data.sucessoes.find(s => s.colaboradorAtualId === colaborador.id);
+
+    let sucPts = 0;
+
+    let sucDetalhe = 'Sem plano de sucessão';
+
+    if (suc) {
+
+      const map = { 'Sem sucessor': 1, '12-24m': 0.8, '6-12m': 0.5, 'Ready now': 0.1 };
+
+      sucPts = Math.round((map[suc.prontidao] || 0) * weights.sucessao);
+
+      sucDetalhe = `Prontidão: ${suc.prontidao}`;
+
+    } else {
+
+      sucPts = Math.round(weights.sucessao * 0.6);
+
+    }
+
+    score += sucPts;
+
+    drivers.push({ nome: 'Ausência de sucessor', pts: sucPts, max: weights.sucessao, detalhe: sucDetalhe });
+
+ 
+
+    // 3. Observações negativas (últimos 90 dias)
+
+    const negObs = data.observacoes.filter(o => o.entidadeId === colaborador.id && o.tom === 'negativo' && daysAgo(o.dataISO) <= 90);
+
+    const obsPts = Math.min(negObs.length * Math.round(weights.obsNegativas / 3), weights.obsNegativas);
+
+    score += obsPts;
+
+    drivers.push({ nome: 'Obs. negativas (90d)', pts: obsPts, max: weights.obsNegativas, detalhe: `${negObs.length} observação(ões) negativa(s)` });
+
+ 
+
+    // 4. Vaga crítica aberta na área
+
+    const vagaCrit = data.vagas.find(v => v.areaId === colaborador.areaId && (v.criticidade >= 4) && ['Aberta', 'Em entrevista'].includes(v.status));
+
+    const vagaPts = vagaCrit ? weights.vagaCritica : 0;
+
+    score += vagaPts;
+
+    drivers.push({ nome: 'Vaga crítica na área', pts: vagaPts, max: weights.vagaCritica, detalhe: vagaCrit ? `Vaga: ${vagaCrit.funcaoTexto}` : 'Nenhuma vaga crítica aberta' });
+
+ 
+
+    // 5. Sinalização do gestor
+
+    const sinMap = { 0: 0, 1: 5, 2: 12, 3: weights.sinalizacao };
+
+    const sinPts = sinMap[colaborador.sinalizacaoGestor] || 0;
+
+    score += sinPts;
+
+    drivers.push({ nome: 'Sinalização do gestor', pts: sinPts, max: weights.sinalizacao, detalhe: `Nível: ${colaborador.sinalizacaoGestor}/3` });
+
+ 
+
+    // 6. Dados desatualizados
+
+    const lastObs = data.observacoes.filter(o => o.entidadeId === colaborador.id).sort((a, b) => new Date(b.dataISO) - new Date(a.dataISO))[0];
+
+    const desatPts = (!lastObs || daysAgo(lastObs.dataISO) > 120) ? weights.desatualizado : 0;
+
+    score += desatPts;
+
+    drivers.push({ nome: 'Dados desatualizados', pts: desatPts, max: weights.desatualizado, detalhe: lastObs ? `Última obs: ${daysAgo(lastObs.dataISO)} dias` : 'Sem observações' });
+
+ 
+
+    const maxPossible = weights.criticidade + weights.sucessao + weights.obsNegativas + weights.vagaCritica + weights.sinalizacao + weights.desatualizado;
+
+    const normalized = Math.min(Math.round((score / maxPossible) * 100), 100);
+
+    return { score: normalized, rawScore: score, drivers };
+
+  },
+
+ 
+
+  allScores(data) {
+
+    return data.colaboradores.filter(c => c.status === 'ativo').map(c => ({
+
+      colaborador: c,
+
+      ...this.calculate(data, c)
+
+    })).sort((a, b) => b.score - a.score);
+
+  }
+
+};
+
+ 
+
+// ============================================================
+
+// ROUTER (SPA)
+
+// ============================================================
+
+let currentRoute = 'dashboard';
+
+const routeLabels = {
+
+  dashboard: 'Dashboard', colaboradores: 'Colaboradores', funcoes: 'Funções Críticas',
+
+  sucessao: 'Sucessão', vagas: 'Vagas Abertas', observacoes: 'Observações',
+
+  correlacoes: 'Correlações', config: 'Configurações'
+
+};
+
+ 
+
+const Router = {
+
+  navigate(route, params = {}) {
+
+    currentRoute = route;
+
+    document.querySelectorAll('.nav-item').forEach(el => {
+
+      el.classList.toggle('active', el.dataset.route === route);
+
+    });
+
+    document.getElementById('bc-current').textContent = routeLabels[route] || route;
+
+    const content = document.getElementById('content');
+
+    content.scrollTop = 0;
+
+ 
+
+    const data = Storage.get();
+
+    switch (route) {
+
+      case 'dashboard': renderDashboard(data); break;
+
+      case 'colaboradores': params.id ? renderColaboradorPerfil(data, params.id) : renderColaboradores(data); break;
+
+      case 'funcoes': renderFuncoes(data); break;
+
+      case 'sucessao': renderSucessao(data); break;
+
+      case 'vagas': renderVagas(data); break;
+
+      case 'observacoes': renderObservacoes(data, params); break;
+
+      case 'correlacoes': renderCorrelacoes(data); break;
+
+      case 'config': renderConfig(data); break;
+
+      default: renderDashboard(data);
+
+    }
+
+  }
+
+};
+
+ 
+
+// ============================================================
+
+// MODAL SYSTEM
+
+// ============================================================
+
+let modalStack = [];
+
+function openModal(html, options = {}) {
+
+  const overlay = document.createElement('div');
+
+  overlay.className = 'modal-overlay';
+
+  overlay.innerHTML = `<div class="modal ${options.lg ? 'modal-lg' : ''}" role="dialog" aria-modal="true">${html}</div>`;
+
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+  document.body.appendChild(overlay);
+
+  modalStack.push(overlay);
+
+  const first = overlay.querySelector('input, select, textarea, button');
+
+  if (first) setTimeout(() => first.focus(), 50);
+
+}
+
+function closeModal() {
+
+  const m = modalStack.pop();
+
+  if (m) m.remove();
+
+}
+
+function closeAllModals() {
+
+  modalStack.forEach(m => m.remove());
+
+  modalStack = [];
+
+}
+
+ 
+
+// ============================================================
+
+// EXPORT / IMPORT
+
+// ============================================================
+
+function exportData() {
+
+  Storage.backup();
+
+  toast('Exportação concluída', 'success');
+
+}
+
+function importData(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = e => {
+
+    try {
+
+      const imported = JSON.parse(e.target.result);
+
+      if (!imported.meta || !imported.colaboradores) throw new Error('Estrutura inválida');
+
+      openModal(`
+
+        <div class="modal-header"><span class="modal-title">Importar Dados</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+        <div class="modal-body">
+
+          <p style="color:var(--text2);margin-bottom:16px;">Arquivo: <strong>${esc(file.name)}</strong></p>
+
+          <p style="color:var(--text2);">Versão: <strong>${esc(imported.meta?.version)}</strong> · ${(imported.colaboradores||[]).length} colaboradores</p>
+
+          <p style="color:var(--yellow);margin-top:12px;font-size:13px;">⚠️ Isso substituirá todos os dados atuais.</p>
+
+        </div>
+
+        <div class="modal-footer">
+
+          <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+          <button class="btn btn-primary" onclick="confirmImport(${JSON.stringify(imported).replace(/"/g,'&quot;')})">Substituir e Importar</button>
+
+        </div>
+
+      `);
+
+    } catch (err) {
+
+      toast('Arquivo inválido: ' + err.message, 'error');
+
+    }
+
+  };
+
+  reader.readAsText(file);
+
+  event.target.value = '';
+
+}
+
+function confirmImport(data) {
+
+  if (typeof data === 'string') { try { data = JSON.parse(data); } catch {} }
+
+  addAudit(data, 'import', 'meta', 'all', 'Importação total de dados');
+
+  Storage.restore(data);
+
+  closeAllModals();
+
+  Router.navigate(currentRoute);
+
+  toast('Dados importados com sucesso', 'success');
+
+}
+
+ 
+
+// ============================================================
+
+// DASHBOARD
+
+// ============================================================
+
+function renderDashboard(data) {
+
+  const scores = RiskEngine.allScores(data);
+
+  const top10 = scores.slice(0, 10);
+
+  const altos = scores.filter(s => s.score >= 60).length;
+
+  const medios = scores.filter(s => s.score >= 30 && s.score < 60).length;
+
+  const funcSemSucessor = data.funcoesCriticas.filter(f => {
+
+    const s = data.sucessoes.find(s => s.colaboradorAtualId === f.colaboradorAtualId);
+
+    return !s || s.prontidao === 'Sem sucessor';
+
+  });
+
+  const funcComSucessor = data.funcoesCriticas.filter(f => {
+
+    const s = data.sucessoes.find(s => s.colaboradorAtualId === f.colaboradorAtualId);
+
+    return s && s.prontidao !== 'Sem sucessor';
+
+  });
+
+  const pctSucessao = data.funcoesCriticas.length ? Math.round((funcComSucessor.length / data.funcoesCriticas.length) * 100) : 0;
+
+  const vagasCriticas = data.vagas.filter(v => v.criticidade >= 4 && ['Aberta','Em entrevista'].includes(v.status));
+
+  const depAlta = data.funcoesCriticas.filter(f => f.criticidade >= 4 && f.cobertura === 0);
+
+ 
+
+  const html = `
+
+    <div class="page-header">
+
+      <div>
+
+        <div class="page-title">Dashboard Executivo</div>
+
+        <div class="page-desc">Visão consolidada de riscos de pessoas em Suprimentos</div>
+
+      </div>
+
+      <div class="page-actions">
+
+        <button class="btn btn-ghost btn-sm" onclick="showPrintOverlay()">
+
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+
+          Relatório
+
+        </button>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="kpi-grid">
+
+      <div class="kpi-card" style="--kpi-color:var(--accent)">
+
+        <div class="kpi-label">Colaboradores Ativos</div>
+
+        <div class="kpi-value">${data.colaboradores.filter(c => c.status === 'ativo').length}</div>
+
+        <div class="kpi-sub">${data.colaboradores.length} total</div>
+
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:var(--red)">
+
+        <div class="kpi-label">Risco Alto de Turnover</div>
+
+        <div class="kpi-value" style="color:var(--red)">${altos}</div>
+
+        <div class="kpi-sub">${medios} em risco médio</div>
+
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:var(--yellow)">
+
+        <div class="kpi-label">Funções sem Sucessor</div>
+
+        <div class="kpi-value" style="color:var(--yellow)">${funcSemSucessor.length}</div>
+
+        <div class="kpi-sub">de ${data.funcoesCriticas.length} funções críticas</div>
+
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:var(--green)">
+
+        <div class="kpi-label">Cobertura de Sucessão</div>
+
+        <div class="kpi-value" style="color:var(--green)">${pctSucessao}%</div>
+
+        <div class="kpi-sub">${funcComSucessor.length} funções com plano</div>
+
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:var(--purple)">
+
+        <div class="kpi-label">Vagas Críticas Abertas</div>
+
+        <div class="kpi-value" style="color:var(--purple)">${vagasCriticas.length}</div>
+
+        <div class="kpi-sub">criticidade ≥ 4</div>
+
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:var(--red)">
+
+        <div class="kpi-label">Dependência Crítica</div>
+
+        <div class="kpi-value" style="color:var(--red)">${depAlta.length}</div>
+
+        <div class="kpi-sub">função crítica sem backup</div>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="grid-2" style="margin-bottom:20px;">
+
+      <div class="card">
+
+        <div class="card-header">
+
+          <span class="card-title">Top 10 · Risco de Turnover</span>
+
+          <a href="#" data-route="colaboradores" class="btn btn-ghost btn-xs">Ver todos</a>
+
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px;">
+
+          ${top10.map((s, i) => `
+
+            <div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--radius-sm);cursor:pointer;transition:background var(--transition);" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''" onclick="Router.navigate('colaboradores',{id:'${s.colaborador.id}'})">
+
+              <span style="font-size:12px;color:var(--text3);width:18px;text-align:right;font-weight:600;">${i+1}</span>
+
+              <div style="flex:1;min-width:0;">
+
+                <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(s.colaborador.nome)}</div>
+
+                <div style="font-size:11.5px;color:var(--text3);">${esc(s.colaborador.cargo)}</div>
+
+              </div>
+
+              <div class="risk-bar-wrap" style="width:120px;">
+
+                <div class="risk-bar"><div class="risk-bar-fill" style="width:${s.score}%;background:${riskColor(s.score)}"></div></div>
+
+                <span class="risk-score" style="color:${riskColor(s.score)}">${s.score}</span>
+
+              </div>
+
+            </div>
+
+          `).join('')}
+
+        </div>
+
+      </div>
+
+ 
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div class="card">
+
+          <div class="card-header"><span class="card-title">⚠️ Alertas Críticos</span></div>
+
+          <div class="alert-list">
+
+            ${depAlta.map(f => `
+
+              <div class="alert-item" style="--alert-color:var(--red)">
+
+                <div class="alert-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+
+                <div>
+
+                  <div class="alert-item-title">Dependência crítica: ${esc(f.nomeFuncao)}</div>
+
+                  <div class="alert-item-desc">${esc(getNomeColaborador(data, f.colaboradorAtualId))} · ${esc(getNomeArea(data, f.areaId))} · Sem backup</div>
+
+                </div>
+
+              </div>
+
+            `).join('')}
+
+            ${funcSemSucessor.map(f => `
+
+              <div class="alert-item" style="--alert-color:var(--yellow)">
+
+                <div class="alert-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+
+                <div>
+
+                  <div class="alert-item-title">Sem sucessor: ${esc(f.nomeFuncao)}</div>
+
+                  <div class="alert-item-desc">${esc(getNomeColaborador(data, f.colaboradorAtualId))} · ${esc(getNomeArea(data, f.areaId))}</div>
+
+                </div>
+
+              </div>
+
+            `).join('')}
+
+            ${vagasCriticas.map(v => `
+
+              <div class="alert-item" style="--alert-color:var(--purple)">
+
+                <div class="alert-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+
+                <div>
+
+                  <div class="alert-item-title">Vaga crítica: ${esc(v.funcaoTexto)}</div>
+
+                  <div class="alert-item-desc">${esc(getNomeArea(data, v.areaId))} · Criticidade ${v.criticidade}/5 · ${esc(v.status)}</div>
+
+                </div>
+
+              </div>
+
+            `).join('')}
+
+            ${(depAlta.length + funcSemSucessor.length + vagasCriticas.length) === 0 ? '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">Sem alertas críticos</div></div>' : ''}
+
+          </div>
+
+        </div>
+
+ 
+
+        <div class="card">
+
+          <div class="card-header"><span class="card-title">Funções Críticas sem Sucessor</span></div>
+
+          ${funcSemSucessor.length === 0 ? '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">Todas têm sucessor</div></div>' : `
+
+            <div style="display:flex;flex-direction:column;gap:6px;">
+
+              ${funcSemSucessor.map(f => `
+
+                <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg3);border-radius:var(--radius-sm);">
+
+                  <div style="flex:1;">
+
+                    <div style="font-size:13px;font-weight:600;color:var(--text);">${esc(f.nomeFuncao)}</div>
+
+                    <div style="font-size:11.5px;color:var(--text3);">${esc(getNomeColaborador(data, f.colaboradorAtualId))}</div>
+
+                  </div>
+
+                  <div style="display:flex;gap:4px;align-items:center;">
+
+                    ${Array.from({length:5},(_,i)=>`<div style="width:8px;height:8px;border-radius:50%;background:${i < f.criticidade ? 'var(--red)' : 'var(--bg4)'};"></div>`).join('')}
+
+                  </div>
+
+                </div>
+
+              `).join('')}
+
+            </div>
+
+          `}
+
+        </div>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <span class="card-title">Últimas Observações (não-confidenciais)</span>
+
+        <a href="#" data-route="observacoes" class="btn btn-ghost btn-xs">Central</a>
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        ${data.observacoes.filter(o => !o.confidencial).sort((a,b) => new Date(b.dataISO)-new Date(a.dataISO)).slice(0,5).map(o => {
+
+          const colName = o.tipoEntidade === 'Colaborador' ? getNomeColaborador(data, o.entidadeId) : (o.tipoEntidade + ' ' + o.entidadeId.slice(0,4));
+
+          const tomMap = { positivo: 'badge-green', neutro: 'badge-gray', negativo: 'badge-red' };
+
+          return `
+
+            <div style="display:flex;gap:12px;align-items:flex-start;padding:10px;background:var(--bg3);border-radius:var(--radius-sm);">
+
+              <span class="badge ${tomMap[o.tom]}">${o.tom}</span>
+
+              <div style="flex:1;min-width:0;">
+
+                <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px;">${esc(colName)}</div>
+
+                <div style="font-size:13px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;">${esc(o.texto)}</div>
+
+              </div>
+
+              <div style="font-size:11.5px;color:var(--text3);white-space:nowrap;">${formatDate(o.dataISO)}</div>
+
+            </div>
+
+          `;
+
+        }).join('')}
+
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+  bindNavLinks();
+
+}
+
+ 
+
+// ============================================================
+
+// COLABORADORES
+
+// ============================================================
+
+function renderColaboradores(data) {
+
+  const html = `
+
+    <div class="page-header">
+
+      <div>
+
+        <div class="page-title">Colaboradores</div>
+
+        <div class="page-desc">${data.colaboradores.length} cadastrados · ${data.colaboradores.filter(c => c.status === 'ativo').length} ativos</div>
+
+      </div>
+
+      <div class="page-actions">
+
+        <button class="btn btn-primary" onclick="openColaboradorForm()">
+
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+
+          Novo Colaborador
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="filter-bar">
+
+      <input class="form-input" id="colSearch" placeholder="Buscar por nome, cargo..." oninput="filterColaboradores()" style="min-width:200px;">
+
+      <select class="form-select" id="colAreaFilter" onchange="filterColaboradores()">
+
+        <option value="">Todas as áreas</option>
+
+        ${data.areas.map(a => `<option value="${a.id}">${esc(a.nome)}</option>`).join('')}
+
+      </select>
+
+      <select class="form-select" id="colStatusFilter" onchange="filterColaboradores()">
+
+        <option value="">Todos os status</option>
+
+        <option value="ativo">Ativo</option>
+
+        <option value="inativo">Inativo</option>
+
+      </select>
+
+      <select class="form-select" id="colSenFilter" onchange="filterColaboradores()">
+
+        <option value="">Todas senioridades</option>
+
+        <option value="Jr">Jr</option><option value="Pl">Pl</option>
+
+        <option value="Sr">Sr</option><option value="Coord">Coord</option>
+
+        <option value="Ger">Ger</option>
+
+      </select>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table id="colTable">
+
+        <thead>
+
+          <tr>
+
+            <th>Nome</th><th>Cargo</th><th>Senioridade</th><th>Área</th>
+
+            <th>Status</th><th>Risco</th><th>Ações</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody id="colTbody">
+
+          ${renderColaboradoresRows(data, data.colaboradores)}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+}
+
+function renderColaboradoresRows(data, cols) {
+
+  if (!cols.length) return '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">👤</div><div class="empty-state-text">Nenhum colaborador encontrado</div></div></td></tr>';
+
+  return cols.map(c => {
+
+    const risk = RiskEngine.calculate(data, c);
+
+    return `
+
+      <tr>
+
+        <td class="td-name" style="cursor:pointer;" onclick="Router.navigate('colaboradores',{id:'${c.id}'})">${esc(c.nome)}</td>
+
+        <td>${esc(c.cargo)}</td>
+
+        <td>${seniorBadge(c.senioridade)}</td>
+
+        <td>${esc(getNomeArea(data, c.areaId))}</td>
+
+        <td>${statusBadge(c.status)}</td>
+
+        <td>
+
+          <div class="risk-bar-wrap">
+
+            <div class="risk-bar"><div class="risk-bar-fill" style="width:${risk.score}%;background:${riskColor(risk.score)}"></div></div>
+
+            <span class="risk-score" style="color:${riskColor(risk.score)}">${risk.score}</span>
+
+          </div>
+
+        </td>
+
+        <td class="td-actions">
+
+          <button class="btn btn-ghost btn-xs" onclick="Router.navigate('colaboradores',{id:'${c.id}'})">Perfil</button>
+
+          <button class="btn btn-ghost btn-xs" onclick="openColaboradorForm('${c.id}')">Editar</button>
+
+          <button class="btn btn-danger btn-xs" onclick="deleteColaborador('${c.id}')">✕</button>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  }).join('');
+
+}
+
+function filterColaboradores() {
+
+  const data = Storage.get();
+
+  const q = document.getElementById('colSearch')?.value.toLowerCase() || '';
+
+  const area = document.getElementById('colAreaFilter')?.value || '';
+
+  const status = document.getElementById('colStatusFilter')?.value || '';
+
+  const sen = document.getElementById('colSenFilter')?.value || '';
+
+  let cols = data.colaboradores;
+
+  if (q) cols = cols.filter(c => c.nome.toLowerCase().includes(q) || c.cargo.toLowerCase().includes(q));
+
+  if (area) cols = cols.filter(c => c.areaId === area);
+
+  if (status) cols = cols.filter(c => c.status === status);
+
+  if (sen) cols = cols.filter(c => c.senioridade === sen);
+
+  document.getElementById('colTbody').innerHTML = renderColaboradoresRows(data, cols);
+
+}
+
+function openColaboradorForm(id = null) {
+
+  const data = Storage.get();
+
+  const c = id ? data.colaboradores.find(x => x.id === id) : null;
+
+  const title = c ? 'Editar Colaborador' : 'Novo Colaborador';
+
+  openModal(`
+
+    <div class="modal-header"><span class="modal-title">${title}</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-nome">Nome *</label>
+
+            <input class="form-input" id="col-nome" value="${esc(c?.nome||'')}" placeholder="Nome completo" required>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-email">E-mail *</label>
+
+            <input class="form-input" id="col-email" type="email" value="${esc(c?.email||'')}" placeholder="email@empresa.com" required>
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-cargo">Cargo/Perfil *</label>
+
+            <input class="form-input" id="col-cargo" value="${esc(c?.cargo||'')}" placeholder="Ex: Analista de Procurement" required>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-mat">Matrícula</label>
+
+            <input class="form-input" id="col-mat" value="${esc(c?.matricula||'')}" placeholder="Opcional">
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-sen">Senioridade *</label>
+
+            <select class="form-select" id="col-sen">
+
+              ${['Jr','Pl','Sr','Coord','Ger'].map(s => `<option value="${s}" ${c?.senioridade===s?'selected':''}>${s}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-area">Área *</label>
+
+            <select class="form-select" id="col-area">
+
+              ${data.areas.map(a => `<option value="${a.id}" ${c?.areaId===a.id?'selected':''}>${esc(a.nome)}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-local">Localidade</label>
+
+            <input class="form-input" id="col-local" value="${esc(c?.localidade||'')}" placeholder="Cidade">
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-gestor">Gestor</label>
+
+            <input class="form-input" id="col-gestor" value="${esc(c?.gestor||'')}" placeholder="Nome do gestor">
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-status">Status</label>
+
+            <select class="form-select" id="col-status">
+
+              <option value="ativo" ${c?.status!=='inativo'?'selected':''}>Ativo</option>
+
+              <option value="inativo" ${c?.status==='inativo'?'selected':''}>Inativo</option>
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label" for="col-sig">Sinalização Gestor (0-3)</label>
+
+            <select class="form-select" id="col-sig">
+
+              <option value="0" ${c?.sinalizacaoGestor===0?'selected':''}>0 – Nenhuma</option>
+
+              <option value="1" ${c?.sinalizacaoGestor===1?'selected':''}>1 – Leve</option>
+
+              <option value="2" ${c?.sinalizacaoGestor===2?'selected':''}>2 – Moderada</option>
+
+              <option value="3" ${c?.sinalizacaoGestor===3?'selected':''}>3 – Alta</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+      <button class="btn btn-primary" onclick="saveColaborador('${id||''}')">Salvar</button>
+
+    </div>
+
+  `);
+
+}
+
+function saveColaborador(id) {
+
+  const nome = document.getElementById('col-nome').value.trim();
+
+  const email = document.getElementById('col-email').value.trim();
+
+  const cargo = document.getElementById('col-cargo').value.trim();
+
+  if (!nome || !email || !cargo) { toast('Preencha os campos obrigatórios', 'error'); return; }
+
+  if (!/\S+@\S+\.\S+/.test(email)) { toast('E-mail inválido', 'error'); return; }
+
+  const data = Storage.get();
+
+  const obj = {
+
+    id: id || uid(), nome, email, cargo,
+
+    matricula: document.getElementById('col-mat').value.trim(),
+
+    senioridade: document.getElementById('col-sen').value,
+
+    areaId: document.getElementById('col-area').value,
+
+    localidade: document.getElementById('col-local').value.trim(),
+
+    gestor: document.getElementById('col-gestor').value.trim(),
+
+    status: document.getElementById('col-status').value,
+
+    sinalizacaoGestor: parseInt(document.getElementById('col-sig').value),
+
+    retencaoObservada: 1
+
+  };
+
+  if (id) {
+
+    const i = data.colaboradores.findIndex(x => x.id === id);
+
+    if (i >= 0) { Object.assign(data.colaboradores[i], obj); }
+
+    addAudit(data, 'update', 'Colaborador', id, `Editou: ${nome}`);
+
+  } else {
+
+    data.colaboradores.push(obj);
+
+    addAudit(data, 'create', 'Colaborador', obj.id, `Criou: ${nome}`);
+
+  }
+
+  Storage.save(data);
+
+  closeModal();
+
+  renderColaboradores(data);
+
+  toast(id ? 'Colaborador atualizado' : 'Colaborador criado', 'success');
+
+}
+
+function deleteColaborador(id) {
+
+  const data = Storage.get();
+
+  const c = data.colaboradores.find(x => x.id === id);
+
+  if (!confirm(`Excluir colaborador "${c?.nome}"? Esta ação não pode ser desfeita.`)) return;
+
+  data.colaboradores = data.colaboradores.filter(x => x.id !== id);
+
+  addAudit(data, 'delete', 'Colaborador', id, `Excluiu: ${c?.nome}`);
+
+  Storage.save(data);
+
+  renderColaboradores(data);
+
+  toast('Colaborador excluído', 'info');
+
+}
+
+ 
+
+// ============================================================
+
+// COLABORADOR PERFIL
+
+// ============================================================
+
+function renderColaboradorPerfil(data, id) {
+
+  const c = data.colaboradores.find(x => x.id === id);
+
+  if (!c) { Router.navigate('colaboradores'); return; }
+
+  const risk = RiskEngine.calculate(data, c);
+
+  const obs = data.observacoes.filter(o => o.entidadeId === id).sort((a,b) => new Date(b.dataISO)-new Date(a.dataISO));
+
+  const corrs = data.correlacoes.filter(cr => cr.origemId === id || cr.destinoId === id);
+
+  const funcao = data.funcoesCriticas.find(f => f.colaboradorAtualId === id);
+
+  const suc = data.sucessoes.find(s => s.colaboradorAtualId === id);
+
+  const html = `
+
+    <div class="page-header">
+
+      <div style="display:flex;align-items:center;gap:14px;">
+
+        <button class="btn btn-ghost btn-sm" onclick="Router.navigate('colaboradores')" style="padding:6px 10px;">← Voltar</button>
+
+        <div>
+
+          <div class="page-title">${esc(c.nome)}</div>
+
+          <div class="page-desc">${esc(c.cargo)} · ${esc(getNomeArea(data, c.areaId))}</div>
+
+        </div>
+
+      </div>
+
+      <div class="page-actions">
+
+        <button class="btn btn-ghost btn-sm" onclick="openObsForm('Colaborador','${id}')">+ Observação</button>
+
+        <button class="btn btn-ghost btn-sm" onclick="openCorrForm('Colaborador','${id}')">+ Correlação</button>
+
+        <button class="btn btn-primary btn-sm" onclick="openColaboradorForm('${id}')">Editar</button>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div class="tabs" id="perfil-tabs">
+
+      <button class="tab-btn active" onclick="showTab('tab-dados',this)">Dados</button>
+
+      <button class="tab-btn" onclick="showTab('tab-obs',this)">Observações (${obs.length})</button>
+
+      <button class="tab-btn" onclick="showTab('tab-corr',this)">Correlações (${corrs.length})</button>
+
+      <button class="tab-btn" onclick="showTab('tab-risco',this)">Risco</button>
+
+    </div>
+
+ 
+
+    <div id="tab-dados">
+
+      <div class="grid-2">
+
+        <div class="card">
+
+          <div class="card-title" style="margin-bottom:14px;">Informações Pessoais</div>
+
+          ${[
+
+            ['Matrícula', c.matricula||'—'],
+
+            ['E-mail', c.email],
+
+            ['Localidade', c.localidade||'—'],
+
+            ['Gestor', c.gestor||'—'],
+
+            ['Senioridade', c.senioridade],
+
+            ['Status', c.status],
+
+          ].map(([k,v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text3);font-size:13px;">${k}</span><span style="color:var(--text);font-size:13px;font-weight:500;">${esc(v)}</span></div>`).join('')}
+
+        </div>
+
+        <div class="card">
+
+          <div class="card-title" style="margin-bottom:14px;">Posição & Sucessão</div>
+
+          ${funcao ? `
+
+            <div style="padding:10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:10px;">
+
+              <div style="font-size:12px;color:var(--text3);margin-bottom:4px;">Função Crítica</div>
+
+              <div style="font-size:13.5px;font-weight:600;color:var(--text);">${esc(funcao.nomeFuncao)}</div>
+
+              <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+
+                <span style="font-size:12px;color:var(--text3);">Criticidade:</span>
+
+                ${Array.from({length:5},(_,i)=>`<div style="width:8px;height:8px;border-radius:50%;background:${i < funcao.criticidade ? 'var(--accent)' : 'var(--bg4)'};"></div>`).join('')}
+
+                <span style="font-size:12px;color:var(--text3);">${funcao.criticidade}/5</span>
+
+              </div>
+
+            </div>
+
+          ` : '<div style="font-size:13px;color:var(--text3);padding:8px 0;">Não vinculado a função crítica</div>'}
+
+          ${suc ? `
+
+            <div style="padding:10px;background:var(--bg3);border-radius:var(--radius-sm);">
+
+              <div style="font-size:12px;color:var(--text3);margin-bottom:4px;">Plano de Sucessão</div>
+
+              <div style="font-size:13.5px;font-weight:600;color:var(--text);">Sucessor: ${suc.sucessorId ? esc(getNomeColaborador(data, suc.sucessorId)) : 'Não definido'}</div>
+
+              <div style="margin-top:6px;">${
+
+                suc.prontidao === 'Ready now' ? '<span class="badge badge-green">Ready now</span>' :
+
+                suc.prontidao === '6-12m' ? '<span class="badge badge-yellow">6-12 meses</span>' :
+
+                suc.prontidao === '12-24m' ? '<span class="badge badge-red">12-24 meses</span>' :
+
+                '<span class="badge badge-red">Sem sucessor</span>'
+
+              }</div>
+
+            </div>
+
+          ` : '<div style="font-size:13px;color:var(--text3);padding:8px 0 0;">Sem plano de sucessão definido</div>'}
+
+        </div>
+
+      </div>
+
+    </div>
+
+ 
+
+    <div id="tab-obs" style="display:none;">
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+
+        <button class="btn btn-primary btn-sm" onclick="openObsForm('Colaborador','${id}')">+ Nova Observação</button>
+
+      </div>
+
+      ${obs.length === 0 ? '<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-text">Sem observações</div></div>' : `
+
+        <div class="timeline">
+
+          ${obs.map(o => `
+
+            <div class="timeline-item">
+
+              <div class="timeline-dot timeline-dot-${o.tom}">
+
+                ${o.tom==='positivo' ? '↑' : o.tom==='negativo' ? '↓' : '·'}
+
+              </div>
+
+              <div class="timeline-content">
+
+                <div class="timeline-meta">
+
+                  <span class="timeline-author">${esc(o.autor)}</span>
+
+                  <span class="timeline-date">${formatDate(o.dataISO)}</span>
+
+                  ${o.confidencial ? '<span class="badge badge-red" style="font-size:10px;">🔒 Conf.</span>' : ''}
+
+                  ${o.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}
+
+                </div>
+
+                <div class="timeline-text">${esc(o.texto)}</div>
+
+                <div style="margin-top:8px;display:flex;gap:6px;">
+
+                  <button class="btn btn-ghost btn-xs" onclick="openObsForm('Colaborador','${id}','${o.id}')">Editar</button>
+
+                  <button class="btn btn-danger btn-xs" onclick="deleteObs('${o.id}')">Excluir</button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          `).join('')}
+
+        </div>
+
+      `}
+
+    </div>
+
+ 
+
+    <div id="tab-corr" style="display:none;">
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+
+        <button class="btn btn-primary btn-sm" onclick="openCorrForm('Colaborador','${id}')">+ Nova Correlação</button>
+
+      </div>
+
+      ${corrs.length === 0 ? '<div class="empty-state"><div class="empty-state-icon">🔗</div><div class="empty-state-text">Sem correlações</div></div>' : `
+
+        <div class="table-wrap">
+
+          <table>
+
+            <thead><tr><th>Tipo</th><th>Origem</th><th>Destino</th><th>Relação</th><th>Nota</th><th>Ações</th></tr></thead>
+
+            <tbody>
+
+              ${corrs.map(cr => `
+
+                <tr>
+
+                  <td>${cr.origemId === id ? '<span class="badge badge-blue">Origem</span>' : '<span class="badge badge-purple">Destino</span>'}</td>
+
+                  <td>${esc(cr.origemTipo === 'Colaborador' ? getNomeColaborador(data, cr.origemId) : cr.origemTipo + ' ' + cr.origemId.slice(0,6))}</td>
+
+                  <td>${esc(cr.destinoTipo === 'Colaborador' ? getNomeColaborador(data, cr.destinoId) : cr.destinoTipo + ' ' + cr.destinoId.slice(0,6))}</td>
+
+                  <td><span class="badge badge-gray">${esc(cr.tipoRelacao)}</span></td>
+
+                  <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(cr.nota)}</td>
+
+                  <td class="td-actions">
+
+                    <button class="btn btn-danger btn-xs" onclick="deleteCorr('${cr.id}')">✕</button>
+
+                  </td>
+
+                </tr>
+
+              `).join('')}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      `}
+
+    </div>
+
+ 
+
+    <div id="tab-risco" style="display:none;">
+
+      <div class="grid-2">
+
+        <div class="card">
+
+          <div class="card-title" style="margin-bottom:16px;">Score de Risco</div>
+
+          <div style="display:flex;align-items:center;gap:24px;margin-bottom:20px;">
+
+            <div style="text-align:center;">
+
+              <div style="font-size:52px;font-weight:800;color:${riskColor(risk.score)};line-height:1;font-variant-numeric:tabular-nums;">${risk.score}</div>
+
+              <div style="font-size:12px;color:var(--text3);margin-top:4px;">/100</div>
+
+            </div>
+
+            <div>
+
+              ${riskBadge(risk.score)}
+
+              <div style="font-size:13px;color:var(--text2);margin-top:8px;">
+
+                ${risk.score >= 60 ? 'Alto risco de turnover. Ação imediata recomendada.' : risk.score >= 30 ? 'Risco moderado. Monitoramento próximo necessário.' : 'Baixo risco. Situação estável.'}
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="driver-list">
+
+            ${risk.drivers.map(d => `
+
+              <div class="driver-item">
+
+                <span class="driver-name" title="${esc(d.detalhe)}">${esc(d.nome)}</span>
+
+                <div class="driver-bar-wrap"><div class="driver-bar-fill" style="width:${d.max?Math.round((d.pts/d.max)*100):0}%;background:${d.pts>d.max*0.6?'var(--red)':d.pts>d.max*0.3?'var(--yellow)':'var(--green)'}"></div></div>
+
+                <span class="driver-pts">+${d.pts}</span>
+
+              </div>
+
+            `).join('')}
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="card-title" style="margin-bottom:16px;">Detalhes dos Drivers</div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            ${risk.drivers.map(d => `
+
+              <div style="padding:10px;background:var(--bg3);border-radius:var(--radius-sm);">
+
+                <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px;">${esc(d.nome)}</div>
+
+                <div style="font-size:12px;color:var(--text3);">${esc(d.detalhe)}</div>
+
+                <div style="font-size:12px;color:var(--accent);font-weight:600;margin-top:3px;">+${d.pts} / ${d.max} pts</div>
+
+              </div>
+
+            `).join('')}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+}
+
+function showTab(tabId, btn) {
+
+  document.querySelectorAll('#content [id^="tab-"]').forEach(el => el.style.display = 'none');
+
+  document.getElementById(tabId).style.display = '';
+
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  btn.classList.add('active');
+
+}
+
+ 
+
+// ============================================================
+
+// FUNÇÕES CRÍTICAS
+
+// ============================================================
+
+function renderFuncoes(data) {
+
+  const html = `
+
+    <div class="page-header">
+
+      <div><div class="page-title">Funções Críticas</div><div class="page-desc">${data.funcoesCriticas.length} funções cadastradas</div></div>
+
+      <div class="page-actions">
+
+        <button class="btn btn-primary" onclick="openFuncaoForm()">+ Nova Função</button>
+
+      </div>
+
+    </div>
+
+    <div class="filter-bar">
+
+      <input class="form-input" id="funcSearch" placeholder="Buscar..." oninput="filterFuncoes()" style="min-width:200px;">
+
+      <select class="form-select" id="funcAreaFilter" onchange="filterFuncoes()">
+
+        <option value="">Todas as áreas</option>
+
+        ${data.areas.map(a => `<option value="${a.id}">${esc(a.nome)}</option>`).join('')}
+
+      </select>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead><tr><th>Função</th><th>Área</th><th>Titular</th><th>Criticidade</th><th>Cobertura</th><th>Ações</th></tr></thead>
+
+        <tbody id="funcTbody">${renderFuncoesRows(data, data.funcoesCriticas)}</tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+}
+
+function renderFuncoesRows(data, funcs) {
+
+  if (!funcs.length) return '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">⚙️</div><div class="empty-state-text">Nenhuma função encontrada</div></div></td></tr>';
+
+  return funcs.map(f => `
+
+    <tr>
+
+      <td class="td-name">${esc(f.nomeFuncao)}</td>
+
+      <td>${esc(getNomeArea(data, f.areaId))}</td>
+
+      <td>${esc(getNomeColaborador(data, f.colaboradorAtualId))}</td>
+
+      <td>${Array.from({length:5},(_,i)=>`<span style="color:${i<f.criticidade?'var(--accent)':'var(--bg4)'}">●</span>`).join(' ')}</td>
+
+      <td>${f.cobertura ? '<span class="badge badge-green">Sim</span>' : '<span class="badge badge-red">Não</span>'}</td>
+
+      <td class="td-actions">
+
+        <button class="btn btn-ghost btn-xs" onclick="openObsForm('FuncaoCritica','${f.id}')">+ Obs</button>
+
+        <button class="btn btn-ghost btn-xs" onclick="openFuncaoForm('${f.id}')">Editar</button>
+
+        <button class="btn btn-danger btn-xs" onclick="deleteFuncao('${f.id}')">✕</button>
+
+      </td>
+
+    </tr>
+
+  `).join('');
+
+}
+
+function filterFuncoes() {
+
+  const data = Storage.get();
+
+  const q = document.getElementById('funcSearch')?.value.toLowerCase() || '';
+
+  const area = document.getElementById('funcAreaFilter')?.value || '';
+
+  let funcs = data.funcoesCriticas;
+
+  if (q) funcs = funcs.filter(f => f.nomeFuncao.toLowerCase().includes(q));
+
+  if (area) funcs = funcs.filter(f => f.areaId === area);
+
+  document.getElementById('funcTbody').innerHTML = renderFuncoesRows(data, funcs);
+
+}
+
+function openFuncaoForm(id = null) {
+
+  const data = Storage.get();
+
+  const f = id ? data.funcoesCriticas.find(x => x.id === id) : null;
+
+  openModal(`
+
+    <div class="modal-header"><span class="modal-title">${f ? 'Editar Função' : 'Nova Função Crítica'}</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="form-group">
+
+          <label class="form-label">Nome da Função *</label>
+
+          <input class="form-input" id="f-nome" value="${esc(f?.nomeFuncao||'')}" required>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Área</label>
+
+            <select class="form-select" id="f-area">${data.areas.map(a=>`<option value="${a.id}" ${f?.areaId===a.id?'selected':''}>${esc(a.nome)}</option>`).join('')}</select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Titular Atual</label>
+
+            <select class="form-select" id="f-colab">
+
+              <option value="">— nenhum —</option>
+
+              ${data.colaboradores.filter(c=>c.status==='ativo').map(c=>`<option value="${c.id}" ${f?.colaboradorAtualId===c.id?'selected':''}>${esc(c.nome)}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Criticidade (1-5)</label>
+
+            <select class="form-select" id="f-crit">
+
+              ${[1,2,3,4,5].map(n=>`<option value="${n}" ${f?.criticidade===n?'selected':''}>${n}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Tem backup/cobertura?</label>
+
+            <select class="form-select" id="f-cob">
+
+              <option value="0" ${f?.cobertura===0?'selected':''}>Não</option>
+
+              <option value="1" ${f?.cobertura===1?'selected':''}>Sim</option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="form-label">Descrição</label>
+
+          <textarea class="form-textarea" id="f-desc">${esc(f?.descricao||'')}</textarea>
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="form-label">Comentários</label>
+
+          <textarea class="form-textarea" id="f-com">${esc(f?.comentarios||'')}</textarea>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+      <button class="btn btn-primary" onclick="saveFuncao('${id||''}')">Salvar</button>
+
+    </div>
+
+  `);
+
+}
+
+function saveFuncao(id) {
+
+  const nome = document.getElementById('f-nome').value.trim();
+
+  if (!nome) { toast('Informe o nome da função', 'error'); return; }
+
+  const data = Storage.get();
+
+  const obj = {
+
+    id: id || uid(), nomeFuncao: nome,
+
+    areaId: document.getElementById('f-area').value,
+
+    colaboradorAtualId: document.getElementById('f-colab').value || null,
+
+    criticidade: parseInt(document.getElementById('f-crit').value),
+
+    cobertura: parseInt(document.getElementById('f-cob').value),
+
+    descricao: document.getElementById('f-desc').value.trim(),
+
+    comentarios: document.getElementById('f-com').value.trim(),
+
+  };
+
+  if (id) { const i = data.funcoesCriticas.findIndex(x => x.id === id); if (i >= 0) Object.assign(data.funcoesCriticas[i], obj); addAudit(data,'update','FuncaoCritica',id,`Editou: ${nome}`); }
+
+  else { data.funcoesCriticas.push(obj); addAudit(data,'create','FuncaoCritica',obj.id,`Criou: ${nome}`); }
+
+  Storage.save(data); closeModal(); renderFuncoes(data); toast('Função salva', 'success');
+
+}
+
+function deleteFuncao(id) {
+
+  const data = Storage.get();
+
+  const f = data.funcoesCriticas.find(x => x.id === id);
+
+  if (!confirm(`Excluir função "${f?.nomeFuncao}"?`)) return;
+
+  data.funcoesCriticas = data.funcoesCriticas.filter(x => x.id !== id);
+
+  addAudit(data,'delete','FuncaoCritica',id,`Excluiu: ${f?.nomeFuncao}`);
+
+  Storage.save(data); renderFuncoes(data); toast('Função excluída', 'info');
+
+}
+
+ 
+
+// ============================================================
+
+// SUCESSÃO
+
+// ============================================================
+
+function renderSucessao(data) {
+
+  const prMap = { 'Ready now': 'badge-green', '6-12m': 'badge-yellow', '12-24m': 'badge-red', 'Sem sucessor': 'badge-red' };
+
+  const riscoMap = { 'Baixo': 'badge-green', 'Medio': 'badge-yellow', 'Alto': 'badge-red' };
+
+  const html = `
+
+    <div class="page-header">
+
+      <div><div class="page-title">Plano de Sucessão</div><div class="page-desc">${data.sucessoes.length} planos cadastrados</div></div>
+
+      <div class="page-actions"><button class="btn btn-primary" onclick="openSucForm()">+ Novo Plano</button></div>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead><tr><th>Titular</th><th>Função</th><th>Sucessor</th><th>Prontidão</th><th>Risco</th><th>Ações</th></tr></thead>
+
+        <tbody>
+
+          ${data.sucessoes.length === 0 ? '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">Sem planos</div></div></td></tr>' :
+
+            data.sucessoes.map(s => `
+
+              <tr>
+
+                <td class="td-name">${esc(getNomeColaborador(data, s.colaboradorAtualId))}</td>
+
+                <td>${esc(s.funcaoTexto)}</td>
+
+                <td>${s.sucessorId ? esc(getNomeColaborador(data, s.sucessorId)) : '<span class="badge badge-red">Não definido</span>'}</td>
+
+                <td><span class="badge ${prMap[s.prontidao]||'badge-gray'}">${esc(s.prontidao)}</span></td>
+
+                <td><span class="badge ${riscoMap[s.risco]||'badge-gray'}">${esc(s.risco)}</span></td>
+
+                <td class="td-actions">
+
+                  <button class="btn btn-ghost btn-xs" onclick="openSucForm('${s.id}')">Editar</button>
+
+                  <button class="btn btn-danger btn-xs" onclick="deleteSuc('${s.id}')">✕</button>
+
+                </td>
+
+              </tr>
+
+            `).join('')}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+}
+
+function openSucForm(id = null) {
+
+  const data = Storage.get();
+
+  const s = id ? data.sucessoes.find(x => x.id === id) : null;
+
+  const cols = data.colaboradores.filter(c => c.status === 'ativo');
+
+  openModal(`
+
+    <div class="modal-header"><span class="modal-title">${s ? 'Editar Plano' : 'Novo Plano de Sucessão'}</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Titular Atual *</label>
+
+            <select class="form-select" id="s-atual">
+
+              ${cols.map(c=>`<option value="${c.id}" ${s?.colaboradorAtualId===c.id?'selected':''}>${esc(c.nome)}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Sucessor</label>
+
+            <select class="form-select" id="s-suc">
+
+              <option value="">— Não definido —</option>
+
+              ${cols.map(c=>`<option value="${c.id}" ${s?.sucessorId===c.id?'selected':''}>${esc(c.nome)}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="form-label">Função / Cargo-chave</label>
+
+          <input class="form-input" id="s-func" value="${esc(s?.funcaoTexto||'')}">
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Prontidão</label>
+
+            <select class="form-select" id="s-pront">
+
+              ${['Ready now','6-12m','12-24m','Sem sucessor'].map(p=>`<option value="${p}" ${s?.prontidao===p?'selected':''}>${p}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Risco</label>
+
+            <select class="form-select" id="s-risco">
+
+              ${['Baixo','Medio','Alto'].map(r=>`<option value="${r}" ${s?.risco===r?'selected':''}>${r}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="form-label">Comentários</label>
+
+          <textarea class="form-textarea" id="s-com">${esc(s?.comentarios||'')}</textarea>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+      <button class="btn btn-primary" onclick="saveSuc('${id||''}')">Salvar</button>
+
+    </div>
+
+  `);
+
+}
+
+function saveSuc(id) {
+
+  const data = Storage.get();
+
+  const obj = {
+
+    id: id || uid(),
+
+    colaboradorAtualId: document.getElementById('s-atual').value,
+
+   funcaoTexto: document.getElementById('s-func').value.trim(),
+
+    sucessorId: document.getElementById('s-suc').value || null,
+
+    prontidao: document.getElementById('s-pront').value,
+
+    risco: document.getElementById('s-risco').value,
+
+    comentarios: document.getElementById('s-com').value.trim(),
+
+  };
+
+  if (id) { const i = data.sucessoes.findIndex(x => x.id === id); if (i >= 0) Object.assign(data.sucessoes[i], obj); addAudit(data,'update','Sucessao',id,'Editou plano'); }
+
+  else { data.sucessoes.push(obj); addAudit(data,'create','Sucessao',obj.id,'Criou plano'); }
+
+  Storage.save(data); closeModal(); renderSucessao(data); toast('Plano salvo', 'success');
+
+}
+
+function deleteSuc(id) {
+
+  const data = Storage.get();
+
+  if (!confirm('Excluir este plano de sucessão?')) return;
+
+  data.sucessoes = data.sucessoes.filter(x => x.id !== id);
+
+  addAudit(data,'delete','Sucessao',id,'Excluiu plano');
+
+  Storage.save(data); renderSucessao(data); toast('Plano excluído','info');
+
+}
+
+ 
+
+// ============================================================
+
+// VAGAS
+
+// ============================================================
+
+function renderVagas(data) {
+
+  const cols = {
+
+    'Aberta': { label: 'Aberta', color: '#ef4444' },
+
+    'Em entrevista': { label: 'Em entrevista', color: '#f59e0b' },
+
+    'Oferta': { label: 'Oferta', color: '#3b82f6' },
+
+    'Fechada': { label: 'Fechada', color: '#22c55e' },
+
+  };
+
+  const html = `
+
+    <div class="page-header">
+
+      <div><div class="page-title">Vagas Abertas</div><div class="page-desc">${data.vagas.filter(v=>v.status!=='Fechada').length} vagas em aberto</div></div>
+
+      <div class="page-actions">
+
+        <button class="btn btn-primary" onclick="openVagaForm()">+ Nova Vaga</button>
+
+      </div>
+
+    </div>
+
+    <div class="kanban">
+
+      ${Object.entries(cols).map(([status, cfg]) => {
+
+        const vagas = data.vagas.filter(v => v.status === status);
+
+        return `
+
+          <div class="kanban-col">
+
+            <div class="kanban-col-header" style="background:${cfg.color}22;color:${cfg.color};">
+
+              ${cfg.label}
+
+              <span style="background:${cfg.color};color:#fff;border-radius:99px;padding:1px 7px;font-size:11px;">${vagas.length}</span>
+
+            </div>
+
+            <div class="kanban-col-body">
+
+              ${vagas.map(v => `
+
+                <div class="kanban-card" onclick="openVagaForm('${v.id}')">
+
+                  <div class="kanban-card-title">${esc(v.funcaoTexto)}</div>
+
+                  <div class="kanban-card-sub">${esc(getNomeArea(data, v.areaId))}</div>
+
+                  <div style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+
+                    <span style="font-size:11px;color:var(--text3);">Crit.</span>
+
+                    ${Array.from({length:5},(_,i)=>`<div style="width:6px;height:6px;border-radius:50%;background:${i<v.criticidade?'var(--accent)':'var(--bg4)'}"></div>`).join('')}
+
+                  </div>
+
+                  <div style="display:flex;gap:4px;margin-top:6px;">
+
+                    <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openObsForm('Vaga','${v.id}')">+ Obs</button>
+
+                    <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();deleteVaga('${v.id}')">✕</button>
+
+                  </div>
+
+                </div>
+
+              `).join('')}
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join('')}
+
+    </div>
+
+    <hr class="divider">
+
+    <div class="section-header">Lista Completa</div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead><tr><th>Função</th><th>Área</th><th>Status</th><th>Criticidade</th><th>Responsável</th><th>Ações</th></tr></thead>
+
+        <tbody>
+
+          ${data.vagas.map(v => `
+
+            <tr>
+
+              <td class="td-name">${esc(v.funcaoTexto)}</td>
+
+              <td>${esc(getNomeArea(data, v.areaId))}</td>
+
+              <td><span class="badge ${v.status==='Fechada'?'badge-green':v.status==='Aberta'?'badge-red':v.status==='Oferta'?'badge-blue':'badge-yellow'}">${esc(v.status)}</span></td>
+
+              <td>${Array.from({length:5},(_,i)=>`<span style="color:${i<v.criticidade?'var(--accent)':'var(--bg4)'}">●</span>`).join(' ')}</td>
+
+              <td>${esc(v.responsavel)}</td>
+
+              <td class="td-actions">
+
+                <button class="btn btn-ghost btn-xs" onclick="openVagaForm('${v.id}')">Editar</button>
+
+                <button class="btn btn-danger btn-xs" onclick="deleteVaga('${v.id}')">✕</button>
+
+              </td>
+
+            </tr>
+
+          `).join('')}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+}
+
+function openVagaForm(id = null) {
+
+  const data = Storage.get();
+
+  const v = id ? data.vagas.find(x => x.id === id) : null;
+
+  openModal(`
+
+    <div class="modal-header"><span class="modal-title">${v ? 'Editar Vaga' : 'Nova Vaga'}</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="form-group"><label class="form-label">Função/Cargo *</label><input class="form-input" id="v-func" value="${esc(v?.funcaoTexto||'')}"></div>
+
+        <div class="form-row">
+
+          <div class="form-group"><label class="form-label">Área</label><select class="form-select" id="v-area">${data.areas.map(a=>`<option value="${a.id}" ${v?.areaId===a.id?'selected':''}>${esc(a.nome)}</option>`).join('')}</select></div>
+
+          <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="v-status">${['Aberta','Em entrevista','Oferta','Fechada'].map(s=>`<option value="${s}" ${v?.status===s?'selected':''}>${s}</option>`).join('')}</select></div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group"><label class="form-label">Criticidade (1-5)</label><select class="form-select" id="v-crit">${[1,2,3,4,5].map(n=>`<option value="${n}" ${v?.criticidade===n?'selected':''}>${n}</option>`).join('')}</select></div>
+
+          <div class="form-group"><label class="form-label">Responsável</label><input class="form-input" id="v-resp" value="${esc(v?.responsavel||'')}"></div>
+
+        </div>
+
+        <div class="form-group"><label class="form-label">Comentários</label><textarea class="form-textarea" id="v-com">${esc(v?.comentarios||'')}</textarea></div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+      <button class="btn btn-primary" onclick="saveVaga('${id||''}')">Salvar</button>
+
+    </div>
+
+  `);
+
+}
+
+function saveVaga(id) {
+
+  const func = document.getElementById('v-func').value.trim();
+
+  if (!func) { toast('Informe a função', 'error'); return; }
+
+  const data = Storage.get();
+
+  const obj = {
+
+    id: id || uid(), funcaoTexto: func,
+
+    areaId: document.getElementById('v-area').value,
+
+    status: document.getElementById('v-status').value,
+
+    criticidade: parseInt(document.getElementById('v-crit').value),
+
+    responsavel: document.getElementById('v-resp').value.trim(),
+
+    comentarios: document.getElementById('v-com').value.trim(),
+
+  };
+
+  if (id) { const i = data.vagas.findIndex(x => x.id === id); if (i >= 0) Object.assign(data.vagas[i], obj); addAudit(data,'update','Vaga',id,'Editou vaga'); }
+
+  else { data.vagas.push(obj); addAudit(data,'create','Vaga',obj.id,`Criou: ${func}`); }
+
+  Storage.save(data); closeModal(); renderVagas(data); toast('Vaga salva', 'success');
+
+}
+
+function deleteVaga(id) {
+
+  const data = Storage.get();
+
+  if (!confirm('Excluir esta vaga?')) return;
+
+  data.vagas = data.vagas.filter(x => x.id !== id);
+
+  addAudit(data,'delete','Vaga',id,'Excluiu vaga');
+
+  Storage.save(data); renderVagas(data); toast('Vaga excluída','info');
+
+}
+
+ 
+
+// ============================================================
+
+// OBSERVAÇÕES
+
+// ============================================================
+
+function renderObservacoes(data, params = {}) {
+
+  const tomMap = { positivo: 'badge-green', neutro: 'badge-gray', negativo: 'badge-red' };
+
+  const html = `
+
+    <div class="page-header">
+
+      <div><div class="page-title">Central de Observações</div><div class="page-desc">${data.observacoes.length} registros</div></div>
+
+      <div class="page-actions"><button class="btn btn-primary" onclick="openObsForm()">+ Nova Observação</button></div>
+
+    </div>
+
+    <div class="filter-bar">
+
+      <input class="form-input" id="obsTxt" placeholder="Buscar no texto..." oninput="filterObs()" style="min-width:180px;">
+
+      <select class="form-select" id="obsTipo" onchange="filterObs()">
+
+        <option value="">Todos os tipos</option>
+
+        <option value="Colaborador">Colaborador</option>
+
+        <option value="FuncaoCritica">Função Crítica</option>
+
+        <option value="Sucessao">Sucessão</option>
+
+        <option value="Vaga">Vaga</option>
+
+      </select>
+
+      <select class="form-select" id="obsTom" onchange="filterObs()">
+
+        <option value="">Todos os tons</option>
+
+        <option value="positivo">Positivo</option>
+
+        <option value="neutro">Neutro</option>
+
+        <option value="negativo">Negativo</option>
+
+      </select>
+
+      <label class="check-wrap">
+
+        <input type="checkbox" id="obsConf" onchange="filterObs()">
+
+        <span style="font-size:13px;color:var(--text2);">Mostrar confidenciais</span>
+
+      </label>
+
+    </div>
+
+    <div id="obs-list">
+
+      ${renderObsRows(data, data.observacoes)}
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+}
+
+function renderObsRows(data, obs) {
+
+  const tomMap = { positivo: 'badge-green', neutro: 'badge-gray', negativo: 'badge-red' };
+
+ if (!obs.length) return '<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-text">Nenhuma observação</div></div>';
+
+  return `<div class="timeline">${obs.sort((a,b) => new Date(b.dataISO)-new Date(a.dataISO)).map(o => {
+
+    const nome = o.tipoEntidade === 'Colaborador' ? getNomeColaborador(data, o.entidadeId) : o.tipoEntidade + ' · ' + (o.entidadeId||'').slice(0,6);
+
+    return `
+
+      <div class="timeline-item">
+
+        <div class="timeline-dot timeline-dot-${o.tom}">${o.tom==='positivo'?'↑':o.tom==='negativo'?'↓':'·'}</div>
+
+        <div class="timeline-content">
+
+          <div class="timeline-meta">
+
+            <span class="timeline-author">${esc(nome)}</span>
+
+            <span class="badge badge-gray" style="font-size:10px;">${esc(o.tipoEntidade)}</span>
+
+            <span class="badge ${tomMap[o.tom]}">${o.tom}</span>
+
+            ${o.confidencial ? '<span class="badge badge-red" style="font-size:10px;">🔒 Conf.</span>' : ''}
+
+            <span class="timeline-date">${formatDate(o.dataISO)}</span>
+
+          </div>
+
+          <div class="timeline-text">${esc(o.texto)}</div>
+
+          <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;">
+
+            ${o.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}
+
+          </div>
+
+          <div style="margin-top:8px;display:flex;gap:6px;">
+
+            <span style="font-size:11.5px;color:var(--text3);">Por: ${esc(o.autor)}</span>
+
+            <button class="btn btn-ghost btn-xs" onclick="openObsForm('${o.tipoEntidade}','${o.entidadeId}','${o.id}')">Editar</button>
+
+            <button class="btn btn-danger btn-xs" onclick="deleteObs('${o.id}')">Excluir</button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join('')}</div>`;
+
+}
+
+function filterObs() {
+
+  const data = Storage.get();
+
+  const q = document.getElementById('obsTxt')?.value.toLowerCase() || '';
+
+  const tipo = document.getElementById('obsTipo')?.value || '';
+
+  const tom = document.getElementById('obsTom')?.value || '';
+
+  const conf = document.getElementById('obsConf')?.checked || false;
+
+  let obs = data.observacoes;
+
+  if (q) obs = obs.filter(o => o.texto.toLowerCase().includes(q) || o.tags.some(t => t.toLowerCase().includes(q)));
+
+  if (tipo) obs = obs.filter(o => o.tipoEntidade === tipo);
+
+  if (tom) obs = obs.filter(o => o.tom === tom);
+
+  if (!conf) obs = obs.filter(o => !o.confidencial);
+
+  document.getElementById('obs-list').innerHTML = renderObsRows(data, obs);
+
+}
+
+function openObsForm(tipo = 'Colaborador', entidadeId = '', id = null) {
+
+  const data = Storage.get();
+
+  const o = id ? data.observacoes.find(x => x.id === id) : null;
+
+  const cols = data.colaboradores;
+
+  const funcs = data.funcoesCriticas;
+
+  const vagas = data.vagas;
+
+ 
+
+  let tags = o?.tags?.join(', ') || '';
+
+  openModal(`
+
+    <div class="modal-header"><span class="modal-title">${o ? 'Editar Observação' : 'Nova Observação'}</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Tipo de Entidade</label>
+
+            <select class="form-select" id="o-tipo" onchange="updateObsEntidade()">
+
+              ${['Colaborador','FuncaoCritica','Sucessao','Vaga'].map(t=>`<option value="${t}" ${(o?.tipoEntidade||tipo)===t?'selected':''}>${t}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Entidade</label>
+
+            <select class="form-select" id="o-entid">
+
+              ${renderObsEntidadeOpts(data, o?.tipoEntidade||tipo, o?.entidadeId||entidadeId)}
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Autor</label>
+
+            <input class="form-input" id="o-autor" value="${esc(o?.autor||'usuário')}">
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Tom</label>
+
+            <select class="form-select" id="o-tom">
+
+              ${['positivo','neutro','negativo'].map(t=>`<option value="${t}" ${(o?.tom||'neutro')===t?'selected':''}>${t}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="form-label">Texto *</label>
+
+          <textarea class="form-textarea" id="o-texto" style="min-height:100px;">${esc(o?.texto||'')}</textarea>
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="form-label">Tags (separadas por vírgula)</label>
+
+          <input class="form-input" id="o-tags" value="${esc(tags)}" placeholder="ex: retenção, alerta, feedback">
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="check-wrap">
+
+            <input type="checkbox" id="o-conf" ${o?.confidencial?'checked':''}>
+
+            <span>Confidencial</span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+      <button class="btn btn-primary" onclick="saveObs('${id||''}')">Salvar</button>
+
+    </div>
+
+  `);
+
+}
+
+function renderObsEntidadeOpts(data, tipo, selectedId) {
+
+  let list = [];
+
+  if (tipo === 'Colaborador') list = data.colaboradores.map(c => ({ id: c.id, nome: c.nome }));
+
+  else if (tipo === 'FuncaoCritica') list = data.funcoesCriticas.map(f => ({ id: f.id, nome: f.nomeFuncao }));
+
+  else if (tipo === 'Vaga') list = data.vagas.map(v => ({ id: v.id, nome: v.funcaoTexto }));
+
+  else if (tipo === 'Sucessao') list = data.sucessoes.map(s => ({ id: s.id, nome: getNomeColaborador(data, s.colaboradorAtualId) + ' → ' + (s.sucessorId ? getNomeColaborador(data, s.sucessorId) : 'Sem') }));
+
+  return list.map(x => `<option value="${x.id}" ${x.id===selectedId?'selected':''}>${esc(x.nome)}</option>`).join('');
+
+}
+
+function updateObsEntidade() {
+
+  const data = Storage.get();
+
+  const tipo = document.getElementById('o-tipo').value;
+
+  document.getElementById('o-entid').innerHTML = renderObsEntidadeOpts(data, tipo, '');
+
+}
+
+function saveObs(id) {
+
+  const texto = document.getElementById('o-texto').value.trim();
+
+  if (!texto) { toast('Informe o texto', 'error'); return; }
+
+  const data = Storage.get();
+
+  const tagsRaw = document.getElementById('o-tags').value;
+
+  const obj = {
+
+    id: id || uid(),
+
+    tipoEntidade: document.getElementById('o-tipo').value,
+
+    entidadeId: document.getElementById('o-entid').value,
+
+    dataISO: id ? (data.observacoes.find(x=>x.id===id)?.dataISO || new Date().toISOString()) : new Date().toISOString(),
+
+    autor: document.getElementById('o-autor').value.trim() || 'usuário',
+
+    texto,
+
+    tags: tagsRaw.split(',').map(t => t.trim()).filter(Boolean),
+
+    confidencial: document.getElementById('o-conf').checked,
+
+    tom: document.getElementById('o-tom').value,
+
+  };
+
+  if (id) { const i = data.observacoes.findIndex(x=>x.id===id); if (i>=0) Object.assign(data.observacoes[i], obj); addAudit(data,'update','Observacao',id,'Editou observação'); }
+
+  else { data.observacoes.push(obj); addAudit(data,'create','Observacao',obj.id,'Criou observação'); }
+
+  Storage.save(data); closeModal();
+
+  if (currentRoute === 'observacoes') renderObservacoes(data);
+
+  else if (currentRoute === 'colaboradores') { const data2 = Storage.get(); renderColaboradorPerfil(data2, obj.entidadeId); }
+
+  toast('Observação salva', 'success');
+
+}
+
+function deleteObs(id) {
+
+  const data = Storage.get();
+
+  if (!confirm('Excluir observação?')) return;
+
+  data.observacoes = data.observacoes.filter(x => x.id !== id);
+
+  addAudit(data,'delete','Observacao',id,'Excluiu observação');
+
+  Storage.save(data);
+
+  if (currentRoute === 'observacoes') renderObservacoes(data);
+
+  toast('Observação excluída', 'info');
+
+}
+
+ 
+
+// ============================================================
+
+// CORRELAÇÕES
+
+// ============================================================
+
+function renderCorrelacoes(data) {
+
+  const tipoMap = { DependeDe:'badge-red', 'Back-up':'badge-green', Mentoria:'badge-blue', Impacta:'badge-yellow', Risco:'badge-red' };
+
+  const html = `
+
+    <div class="page-header">
+
+      <div><div class="page-title">Correlações</div><div class="page-desc">Relacionamentos entre entidades</div></div>
+
+      <div class="page-actions"><button class="btn btn-primary" onclick="openCorrForm()">+ Nova Correlação</button></div>
+
+    </div>
+
+    <div id="corr-canvas-wrap" style="margin-bottom:20px;">
+
+      <canvas id="corr-canvas"></canvas>
+
+    </div>
+
+    <div class="filter-bar">
+
+      <select class="form-select" id="corr-tipo-filter" onchange="filterCorr()">
+
+        <option value="">Todos os tipos</option>
+
+        ${['DependeDe','Back-up','Mentoria','Impacta','Risco'].map(t=>`<option value="${t}">${t}</option>`).join('')}
+
+      </select>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead><tr><th>Origem</th><th>Destino</th><th>Relação</th><th>Nota</th><th>Ações</th></tr></thead>
+
+        <tbody id="corr-tbody">${renderCorrRows(data, data.correlacoes)}</tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+  drawCorrGraph(data);
+
+}
+
+function renderCorrRows(data, corrs) {
+
+  const tipoMap = { DependeDe:'badge-red', 'Back-up':'badge-green', Mentoria:'badge-blue', Impacta:'badge-yellow', Risco:'badge-red' };
+
+  if (!corrs.length) return '<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">🔗</div><div class="empty-state-text">Nenhuma correlação</div></div></td></tr>';
+
+  return corrs.map(cr => {
+
+    const oNome = cr.origemTipo === 'Colaborador' ? getNomeColaborador(data, cr.origemId) : cr.origemTipo + ' ' + cr.origemId.slice(0,6);
+
+    const dNome = cr.destinoTipo === 'Colaborador' ? getNomeColaborador(data, cr.destinoId) : cr.destinoTipo + ' ' + cr.destinoId.slice(0,6);
+
+    return `
+
+      <tr>
+
+        <td><span class="badge badge-gray" style="font-size:10px;">${esc(cr.origemTipo)}</span> ${esc(oNome)}</td>
+
+        <td><span class="badge badge-gray" style="font-size:10px;">${esc(cr.destinoTipo)}</span> ${esc(dNome)}</td>
+
+        <td><span class="badge ${tipoMap[cr.tipoRelacao]||'badge-gray'}">${esc(cr.tipoRelacao)}</span></td>
+
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(cr.nota)}</td>
+
+        <td class="td-actions"><button class="btn btn-danger btn-xs" onclick="deleteCorr('${cr.id}')">✕</button></td>
+
+      </tr>
+
+    `;
+
+  }).join('');
+
+}
+
+function filterCorr() {
+
+  const data = Storage.get();
+
+  const tipo = document.getElementById('corr-tipo-filter')?.value || '';
+
+  let corrs = data.correlacoes;
+
+  if (tipo) corrs = corrs.filter(c => c.tipoRelacao === tipo);
+
+  document.getElementById('corr-tbody').innerHTML = renderCorrRows(data, corrs);
+
+}
+
+function drawCorrGraph(data) {
+
+  const canvas = document.getElementById('corr-canvas');
+
+  if (!canvas) return;
+
+  const wrap = document.getElementById('corr-canvas-wrap');
+
+  canvas.width = wrap.offsetWidth || 700;
+
+  canvas.height = 380;
+
+  const ctx = canvas.getContext('2d');
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+ 
+
+  // Build nodes
+
+  const nodeMap = {};
+
+  data.correlacoes.forEach(cr => {
+
+    if (!nodeMap[cr.origemId]) nodeMap[cr.origemId] = { id: cr.origemId, tipo: cr.origemTipo, label: cr.origemTipo === 'Colaborador' ? getNomeColaborador(data, cr.origemId).split(' ')[0] : cr.origemTipo.slice(0,4) };
+
+    if (!nodeMap[cr.destinoId]) nodeMap[cr.destinoId] = { id: cr.destinoId, tipo: cr.destinoTipo, label: cr.destinoTipo === 'Colaborador' ? getNomeColaborador(data, cr.destinoId).split(' ')[0] : cr.destinoTipo.slice(0,4) };
+
+  });
+
+  const nodes = Object.values(nodeMap);
+
+  const W = canvas.width, H = canvas.height;
+
+  // Place in circle
+
+  nodes.forEach((n, i) => {
+
+    const angle = (i / nodes.length) * Math.PI * 2 - Math.PI / 2;
+
+    n.x = W/2 + Math.cos(angle) * (Math.min(W,H) * 0.35);
+
+    n.y = H/2 + Math.sin(angle) * (Math.min(W,H) * 0.35);
+
+  });
+
+ 
+
+  const relColors = { DependeDe:'#ef4444', 'Back-up':'#22c55e', Mentoria:'#3b82f6', Impacta:'#f59e0b', Risco:'#ef4444' };
+
+ 
+
+  // Draw edges
+
+  data.correlacoes.forEach(cr => {
+
+    const o = nodeMap[cr.origemId], d = nodeMap[cr.destinoId];
+
+    if (!o || !d) return;
+
+    ctx.beginPath();
+
+    ctx.moveTo(o.x, o.y);
+
+    ctx.lineTo(d.x, d.y);
+
+    ctx.strokeStyle = relColors[cr.tipoRelacao] || '#3b82f6';
+
+    ctx.lineWidth = 1.5;
+
+    ctx.globalAlpha = 0.6;
+
+    ctx.stroke();
+
+    ctx.globalAlpha = 1;
+
+    // Arrow
+
+    const angle = Math.atan2(d.y - o.y, d.x - o.x);
+
+    const mx = (o.x + d.x) / 2, my = (o.y + d.y) / 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(mx, my);
+
+    ctx.lineTo(mx - 10 * Math.cos(angle - 0.4), my - 10 * Math.sin(angle - 0.4));
+
+    ctx.lineTo(mx - 10 * Math.cos(angle + 0.4), my - 10 * Math.sin(angle + 0.4));
+
+    ctx.closePath();
+
+    ctx.fillStyle = relColors[cr.tipoRelacao] || '#3b82f6';
+
+    ctx.fill();
+
+  });
+
+ 
+
+  // Draw nodes
+
+  nodes.forEach(n => {
+
+    const col = n.tipo === 'Colaborador' ? '#3b82f6' : n.tipo === 'FuncaoCritica' ? '#a78bfa' : '#f59e0b';
+
+    ctx.beginPath();
+
+    ctx.arc(n.x, n.y, 22, 0, Math.PI * 2);
+
+    ctx.fillStyle = col + '22';
+
+    ctx.fill();
+
+    ctx.strokeStyle = col;
+
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+    ctx.fillStyle = '#e8ecf4';
+
+    ctx.font = '600 11px DM Sans, sans-serif';
+
+    ctx.textAlign = 'center';
+
+    ctx.textBaseline = 'middle';
+
+    ctx.fillText(n.label.slice(0,8), n.x, n.y);
+
+  });
+
+}
+
+function openCorrForm(origemTipo = 'Colaborador', origemId = '') {
+
+  const data = Storage.get();
+
+  const tipos = ['Colaborador','FuncaoCritica','Vaga','Sucessao'];
+
+  openModal(`
+
+    <div class="modal-header"><span class="modal-title">Nova Correlação</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+    <div class="modal-body">
+
+      <div class="form-grid">
+
+        <div class="section-header">Origem</div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Tipo Origem</label>
+
+            <select class="form-select" id="cr-otipo" onchange="updateCorrOpts('o')">
+
+              ${tipos.map(t=>`<option value="${t}" ${t===origemTipo?'selected':''}>${t}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Entidade Origem</label>
+
+            <select class="form-select" id="cr-oid">${renderObsEntidadeOpts(data, origemTipo, origemId)}</select>
+
+          </div>
+
+        </div>
+
+        <div class="section-header">Destino</div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Tipo Destino</label>
+
+            <select class="form-select" id="cr-dtipo" onchange="updateCorrOpts('d')">
+
+              ${tipos.map(t=>`<option value="${t}">${t}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label class="form-label">Entidade Destino</label>
+
+            <select class="form-select" id="cr-did">${renderObsEntidadeOpts(data, 'Colaborador', '')}</select>
+
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label class="form-label">Tipo de Relação</label>
+
+            <select class="form-select" id="cr-rel">
+
+              ${['DependeDe','Back-up','Mentoria','Impacta','Risco'].map(r=>`<option value="${r}">${r}</option>`).join('')}
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label class="form-label">Nota</label>
+
+          <textarea class="form-textarea" id="cr-nota"></textarea>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+      <button class="btn btn-primary" onclick="saveCorr()">Salvar</button>
+
+    </div>
+
+  `);
+
+}
+
+function updateCorrOpts(which) {
+
+  const data = Storage.get();
+
+  const tipo = document.getElementById(`cr-${which}tipo`).value;
+
+  document.getElementById(`cr-${which}id`).innerHTML = renderObsEntidadeOpts(data, tipo, '');
+
+}
+
+function saveCorr() {
+
+  const data = Storage.get();
+
+  const obj = {
+
+    id: uid(),
+
+    origemTipo: document.getElementById('cr-otipo').value,
+
+    origemId: document.getElementById('cr-oid').value,
+
+    destinoTipo: document.getElementById('cr-dtipo').value,
+
+    destinoId: document.getElementById('cr-did').value,
+
+    tipoRelacao: document.getElementById('cr-rel').value,
+
+    nota: document.getElementById('cr-nota').value.trim(),
+
+  };
+
+  if (!obj.origemId || !obj.destinoId) { toast('Selecione origem e destino', 'error'); return; }
+
+  data.correlacoes.push(obj);
+
+  addAudit(data,'create','Correlacao',obj.id,'Criou correlação');
+
+  Storage.save(data); closeModal();
+
+  if (currentRoute === 'correlacoes') renderCorrelacoes(data);
+
+  toast('Correlação criada', 'success');
+
+}
+
+function deleteCorr(id) {
+
+  const data = Storage.get();
+
+  if (!confirm('Excluir correlação?')) return;
+
+  data.correlacoes = data.correlacoes.filter(x => x.id !== id);
+
+  addAudit(data,'delete','Correlacao',id,'Excluiu correlação');
+
+  Storage.save(data);
+
+  if (currentRoute === 'correlacoes') renderCorrelacoes(data);
+
+  else if (currentRoute === 'colaboradores') { const d2 = Storage.get(); Router.navigate('colaboradores', { id: d2.colaboradores[0]?.id }); }
+
+  toast('Correlação excluída', 'info');
+
+}
+
+ 
+
+// ============================================================
+
+// CONFIGURAÇÕES
+
+// ============================================================
+
+function renderConfig(data) {
+
+  const w = data.settings?.weights || { criticidade:30, sucessao:25, obsNegativas:20, vagaCritica:10, sinalizacao:20, desatualizado:10 };
+
+  const html = `
+
+    <div class="page-header">
+
+      <div><div class="page-title">Configurações</div><div class="page-desc">Pesos do cálculo de risco e gerenciamento de dados</div></div>
+
+    </div>
+
+ 
+
+    <div class="grid-2">
+
+      <div class="card">
+
+        <div class="card-title" style="margin-bottom:16px;">Pesos do Cálculo de Risco</div>
+
+        ${[
+
+          ['criticidade','Criticidade do papel', w.criticidade],
+
+          ['sucessao','Ausência de sucessor', w.sucessao],
+
+          ['obsNegativas','Observações negativas', w.obsNegativas],
+
+          ['vagaCritica','Vaga crítica na área', w.vagaCritica],
+
+          ['sinalizacao','Sinalização do gestor', w.sinalizacao],
+
+          ['desatualizado','Dados desatualizados', w.desatualizado],
+
+        ].map(([key, label, val]) => `
+
+          <div class="form-group" style="margin-bottom:14px;">
+
+            <label class="form-label" for="w-${key}">${label} <span style="color:var(--accent);font-variant-numeric:tabular-nums;" id="lbl-${key}">${val}</span></label>
+
+            <div class="range-wrap">
+
+              <input type="range" id="w-${key}" min="0" max="50" value="${val}" oninput="document.getElementById('lbl-${key}').textContent=this.value">
+
+            </div>
+
+          </div>
+
+        `).join('')}
+
+        <button class="btn btn-primary" onclick="saveWeights()">Salvar Pesos</button>
+
+      </div>
+
+ 
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div class="card">
+
+          <div class="card-title" style="margin-bottom:14px;">Gerenciamento de Áreas</div>
+
+          ${data.areas.map(a => `
+
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);">
+
+              <span style="flex:1;color:var(--text);">${esc(a.nome)}</span>
+
+              <button class="btn btn-ghost btn-xs" onclick="editArea('${a.id}')">Editar</button>
+
+              <button class="btn btn-danger btn-xs" onclick="deleteArea('${a.id}')">✕</button>
+
+            </div>
+
+          `).join('')}
+
+          <div style="margin-top:12px;display:flex;gap:8px;">
+
+            <input class="form-input" id="new-area" placeholder="Nova área..." style="flex:1;">
+
+            <button class="btn btn-primary btn-sm" onclick="addArea()">Adicionar</button>
+
+          </div>
+
+        </div>
+
+ 
+
+        <div class="card">
+
+          <div class="card-title" style="margin-bottom:14px;">Backup e Dados</div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <button class="btn btn-success" onclick="exportData()">
+
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+
+              Exportar Backup JSON
+
+            </button>
+
+            <label class="btn btn-ghost" style="cursor:pointer;">
+
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+
+              Importar JSON
+
+              <input type="file" accept=".json" onchange="importData(event)" style="display:none">
+
+            </label>
+
+            <button class="btn btn-danger" onclick="confirmReset()">
+
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.47"/></svg>
+
+              Reset Total
+
+            </button>
+
+          </div>
+
+        </div>
+
+ 
+
+        <div class="card">
+
+          <div class="card-title" style="margin-bottom:14px;">Audit Trail (últimas 10)</div>
+
+          <div style="display:flex;flex-direction:column;gap:6px;">
+
+            ${(data.audit||[]).slice(0,10).map(a => `
+
+              <div style="display:flex;gap:8px;align-items:flex-start;padding:8px;background:var(--bg3);border-radius:var(--radius-sm);">
+
+                <span class="badge badge-gray" style="font-size:10px;flex-shrink:0;">${esc(a.acao)}</span>
+
+                <div style="flex:1;min-width:0;">
+
+                  <div style="font-size:12.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(a.resumoMudanca)}</div>
+
+                  <div style="font-size:11px;color:var(--text3);">${formatDate(a.dataISO)} · ${esc(a.entidadeTipo)}</div>
+
+                </div>
+
+              </div>
+
+            `).join('')}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
+}
+
+function saveWeights() {
+
+  const data = Storage.get();
+
+  if (!data.settings) data.settings = {};
+
+  data.settings.weights = {
+
+    criticidade: parseInt(document.getElementById('w-criticidade').value),
+
+    sucessao: parseInt(document.getElementById('w-sucessao').value),
+
+    obsNegativas: parseInt(document.getElementById('w-obsNegativas').value),
+
+    vagaCritica: parseInt(document.getElementById('w-vagaCritica').value),
+
+    sinalizacao: parseInt(document.getElementById('w-sinalizacao').value),
+
+    desatualizado: parseInt(document.getElementById('w-desatualizado').value),
+
+  };
+
+  Storage.save(data); toast('Pesos salvos com sucesso', 'success');
+
+}
+
+function addArea() {
+
+  const val = document.getElementById('new-area').value.trim();
+
+  if (!val) { toast('Informe o nome', 'error'); return; }
+
+  const data = Storage.get();
+
+  data.areas.push({ id: uid(), nome: val });
+
+  addAudit(data,'create','Area','','Criou área: ' + val);
+
+  Storage.save(data); renderConfig(data); toast('Área adicionada', 'success');
+
+}
+
+function editArea(id) {
+
+  const data = Storage.get();
+
+  const a = data.areas.find(x => x.id === id);
+
+  const nome = prompt('Novo nome da área:', a?.nome || '');
+
+  if (!nome) return;
+
+  const i = data.areas.findIndex(x => x.id === id);
+
+  if (i >= 0) data.areas[i].nome = nome;
+
+  addAudit(data,'update','Area',id,'Renomeou área');
+
+  Storage.save(data); renderConfig(data); toast('Área atualizada', 'success');
+
+}
+
+function deleteArea(id) {
+
+  const data = Storage.get();
+
+  if (!confirm('Excluir área?')) return;
+
+  data.areas = data.areas.filter(x => x.id !== id);
+
+  addAudit(data,'delete','Area',id,'Excluiu área');
+
+  Storage.save(data); renderConfig(data); toast('Área excluída', 'info');
+
+}
+
+function confirmReset() {
+
+  openModal(`
+
+    <div class="modal-header"><span class="modal-title">Reset Total</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+
+    <div class="modal-body">
+
+      <p style="color:var(--text2);margin-bottom:12px;">Esta ação irá <strong>apagar todos os dados</strong> e recarregar o seed inicial.</p>
+
+      <p style="color:var(--red);">⚠️ Esta ação é irreversível. Faça um backup antes.</p>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+
+      <button class="btn btn-danger" onclick="closeModal();Storage.reset()">Confirmar Reset</button>
+
+    </div>
+
+  `);
+
+}
+
+ 
+
+// ============================================================
+
+// PRINT / RELATÓRIO
+
+// ============================================================
+
+function showPrintOverlay() {
+
+  const data = Storage.get();
+
+  const scores = RiskEngine.allScores(data);
+
+  const altos = scores.filter(s => s.score >= 60);
+
+  const funcSemSuc = data.funcoesCriticas.filter(f => {
+
+    const s = data.sucessoes.find(s => s.colaboradorAtualId === f.colaboradorAtualId);
+
+    return !s || s.prontidao === 'Sem sucessor';
+
+  });
+
+  const vagasCrit = data.vagas.filter(v => v.criticidade >= 4 && ['Aberta','Em entrevista'].includes(v.status));
+
+ const obsRecentes = data.observacoes.filter(o => !o.confidencial).sort((a,b) => new Date(b.dataISO)-new Date(a.dataISO)).slice(0,8);
+
+ 
+
+  document.getElementById('print-content').innerHTML = `
+
+    <p style="color:#666;margin-bottom:24px;">Gerado em ${new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'})}</p>
+
+ 
+
+    <h2 style="font-size:16px;margin-bottom:12px;color:#333;">KPIs</h2>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+
+      ${[
+
+        ['Colaboradores ativos', data.colaboradores.filter(c=>c.status==='ativo').length],
+
+        ['Risco alto', altos.length],
+
+        ['Funções sem sucessor', funcSemSuc.length],
+
+        ['Vagas críticas', vagasCrit.length],
+
+      ].map(([l,v]) => `<div style="padding:12px 16px;border:1px solid #ddd;border-radius:6px;min-width:120px;"><div style="font-size:11px;color:#888;text-transform:uppercase;">${l}</div><div style="font-size:24px;font-weight:700;">${v}</div></div>`).join('')}
+
+    </div>
+
+ 
+
+    <h2 style="font-size:16px;margin-bottom:12px;color:#333;">Top Riscos de Turnover</h2>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+
+      <thead><tr style="background:#f5f5f5;">${['#','Nome','Cargo','Score','Principais drivers'].map(h=>`<th style="padding:8px;text-align:left;border:1px solid #ddd;font-size:12px;">${h}</th>`).join('')}</tr></thead>
+
+      <tbody>
+
+        ${scores.slice(0,10).map((s,i) => `
+
+          <tr>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${i+1}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;font-weight:600;">${esc(s.colaborador.nome)}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${esc(s.colaborador.cargo)}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:13px;font-weight:700;color:${s.score>=60?'#ef4444':s.score>=30?'#f59e0b':'#22c55e'}">${s.score}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${s.drivers.filter(d=>d.pts>0).map(d=>`${d.nome}: +${d.pts}`).join(' · ')}</td>
+
+          </tr>
+
+        `).join('')}
+
+      </tbody>
+
+    </table>
+
+ 
+
+    <h2 style="font-size:16px;margin-bottom:12px;color:#333;">Funções Críticas sem Sucessor</h2>
+
+    ${funcSemSuc.length === 0 ? '<p style="color:#22c55e;">✅ Todas as funções têm plano de sucessão.</p>' : `
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+
+        <thead><tr style="background:#f5f5f5;">${['Função','Área','Titular','Criticidade'].map(h=>`<th style="padding:8px;text-align:left;border:1px solid #ddd;font-size:12px;">${h}</th>`).join('')}</tr></thead>
+
+        <tbody>
+
+          ${funcSemSuc.map(f=>`<tr>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${esc(f.nomeFuncao)}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${esc(getNomeArea(data,f.areaId))}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${esc(getNomeColaborador(data,f.colaboradorAtualId))}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${f.criticidade}/5</td>
+
+          </tr>`).join('')}
+
+        </tbody>
+
+     </table>
+
+    `}
+
+ 
+
+    <h2 style="font-size:16px;margin-bottom:12px;color:#333;">Vagas Críticas Abertas</h2>
+
+    ${vagasCrit.length === 0 ? '<p style="color:#22c55e;margin-bottom:24px;">✅ Nenhuma vaga crítica aberta.</p>' : `
+
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+
+        <thead><tr style="background:#f5f5f5;">${['Função','Área','Status','Criticidade'].map(h=>`<th style="padding:8px;text-align:left;border:1px solid #ddd;font-size:12px;">${h}</th>`).join('')}</tr></thead>
+
+        <tbody>
+
+          ${vagasCrit.map(v=>`<tr>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${esc(v.funcaoTexto)}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${esc(getNomeArea(data,v.areaId))}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${esc(v.status)}</td>
+
+            <td style="padding:7px 8px;border:1px solid #ddd;font-size:12px;">${v.criticidade}/5</td>
+
+          </tr>`).join('')}
+
+        </tbody>
+
+      </table>
+
+    `}
+
+ 
+
+    <h2 style="font-size:16px;margin-bottom:12px;color:#333;">Últimas Observações (não confidenciais)</h2>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+
+      ${obsRecentes.map(o=>{
+
+        const nome = o.tipoEntidade === 'Colaborador' ? getNomeColaborador(data, o.entidadeId) : o.tipoEntidade;
+
+        return `<div style="padding:10px;border:1px solid #ddd;border-radius:6px;">
+
+          <div style="font-size:12px;color:#888;">${formatDate(o.dataISO)} · ${esc(nome)} · <strong>${o.tom}</strong></div>
+
+          <div style="font-size:13px;margin-top:4px;">${esc(o.texto)}</div>
+
+        </div>`;
+
+      }).join('')}
+
+    </div>
+
+  `;
+
+  document.getElementById('print-overlay').classList.add('visible');
+
+}
+
+function hidePrintOverlay() {
+
+  document.getElementById('print-overlay').classList.remove('visible');
+
+}
+
+ 
+
+// ============================================================
+
+// BIND NAV LINKS
+
+// ============================================================
+
+function bindNavLinks() {
+
+  document.querySelectorAll('[data-route]').forEach(el => {
+
+    el.addEventListener('click', e => {
+
+      e.preventDefault();
+
+      Router.navigate(el.dataset.route);
+
+    });
+
+  });
+
+}
+
+ 
+
+// ============================================================
+
+// INIT
+
+// ============================================================
+
+function initApp() {
+
+  let data = Storage.get();
+
+  if (!data) {
+
+    data = generateSeed();
+
+    Storage.save(data);
+
+  }
+
+ bindNavLinks();
+
+  Router.navigate('dashboard');
+
+}
+
+ 
+
+document.addEventListener('DOMContentLoaded', initApp);
+
+</script>
+
+</body>
+
+</html>
